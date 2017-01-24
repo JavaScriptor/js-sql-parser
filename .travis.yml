@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - "4.0"
+  - "0.12"
+  - "0.11"
+  - "0.10"
+  - "iojs"
+  - "iojs-v1.0.4" 
+  - "v4.2.1"
+  - "v4.3.0"
+  - "v6.9.1"
+scripts: {
+  "test": "mocha "
+  }

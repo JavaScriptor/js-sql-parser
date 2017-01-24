@@ -2,6 +2,8 @@
 
 > parse sql in js.
 
+[![Build Status](https://travis-ci.org/JavaScriptor/js-sql-parser.svg?branch=master)](https://travis-ci.org/JavaScriptor/js-sql-parser)
+
 ## commonjs usage
 
 `npm install --save js-sql-parser`
