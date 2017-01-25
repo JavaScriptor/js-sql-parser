@@ -2,7 +2,9 @@
 
 > parse sql in js.
 
-[![Build Status](https://travis-ci.org/JavaScriptor/js-sql-parser.svg?branch=master)](https://travis-ci.org/JavaScriptor/js-sql-parser)
+[![Build Status][travis-image]][travis-url]
+[![NPM Version][npm-image]][npm-url]
+[![NPM Downloads][downloads-image]][downloads-url]
 
 ## commonjs usage
 
@@ -27,4 +29,11 @@ sqlParser.parse('select * from dual');
 ## AMD support
 
 ...
+
+[travis-image]: https://api.travis-ci.org/JavaScriptor/js-sql-parser.svg
+[travis-url]: https://travis-ci.org/JavaScriptor/js-sql-parser
+[npm-image]: https://img.shields.io/npm/v/js-sql-parser.svg
+[npm-url]: https://npmjs.org/package/js-sql-parser
+[downloads-image]: https://img.shields.io/npm/dm/js-sql-parser.svg
+[downloads-url]: https://npmjs.org/package/js-sql-parser
 
