@@ -6,6 +6,8 @@
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
 
+sql grammar follows https://dev.mysql.com/doc/refman/5.7/en/select.html
+
 ## commonjs usage
 
 `npm install --save js-sql-parser`

@@ -18,19 +18,23 @@ const testParser = function (sql) {
 
 describe('simple sql support', function () {
   it('test1', function () {
-    testParser('select distinct ');
+    testParser('select distinct max_statement_time = 1.2 a ');
   });
 
   it('test2', function () {
-    testParser('select all ');
+    testParser('select all 0x1f');
   });
 
   it('test3', function () {
-    testParser('select distinctrow ');
+    testParser('select distinctrow "xx"');
   });
 
   it('test4', function () {
-    testParser('select ');
+    testParser('select null');
+  });
+
+  it ('test5', function () {
+    testParser('select function(), function(1, "sd", 0x1F)');
   });
 });
 

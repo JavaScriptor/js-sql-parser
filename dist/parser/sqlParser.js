@@ -72,12 +72,12 @@
   }
 */
 var sqlParser = (function(){
-var o=function(k,v,o,l){for(o=o||{},l=k.length;l--;o[k[l]]=v);return o};
+var o=function(k,v,o,l){for(o=o||{},l=k.length;l--;o[k[l]]=v);return o},$V0=[21,22,24,25,26,27,28,29,30,31,34,35,39,41,42,44,45,47,48,50],$V1=[22,24,25,26,27,28,29,30,31,34,35,39,41,42,44,45,47,48,50],$V2=[24,25,26,27,28,29,30,31,34,35,39,41,42,44,45,47,48,50],$V3=[24,26,27,28,29,30,31,34,35,39,41,42,44,45,47,48,50],$V4=[24,27,28,29,30,31,34,35,39,41,42,44,45,47,48,50],$V5=[24,28,29,30,31,34,35,39,41,42,44,45,47,48,50],$V6=[24,29,30,31,34,35,39,41,42,44,45,47,48,50],$V7=[24,30,31,34,35,39,41,42,44,45,47,48,50],$V8=[24,31,34,35,39,41,42,44,45,47,48,50],$V9=[24,34,35,39,41,42,44,45,47,48,50],$Va=[1,47],$Vb=[1,31],$Vc=[1,32],$Vd=[1,39],$Ve=[1,45],$Vf=[1,46],$Vg=[1,48],$Vh=[1,49],$Vi=[1,50],$Vj=[1,51],$Vk=[1,44],$Vl=[5,32],$Vm=[5,32,38,39,54],$Vn=[32,54],$Vo=[2,47],$Vp=[1,62],$Vq=[1,63],$Vr=[1,61];
 var parser = {trace: function trace() { },
 yy: {},
-symbols_: {"error":2,"main":3,"selectClause":4,"EOF":5,"SELECT":6,"distinctOpt":7,"ALL":8,"DISTINCT":9,"DISTINCTROW":10,"$accept":0,"$end":1},
-terminals_: {2:"error",5:"EOF",6:"SELECT",8:"ALL",9:"DISTINCT",10:"DISTINCTROW"},
-productions_: [0,[3,2],[4,2],[7,1],[7,1],[7,1],[7,0]],
+symbols_: {"error":2,"main":3,"selectClause":4,"EOF":5,"SELECT":6,"distinctOpt":7,"highPriorityOpt":8,"maxStateMentTimeOpt":9,"straightJoinOpt":10,"sqlSmallResultOpt":11,"sqlBigResultOpt":12,"sqlBufferResultOpt":13,"sqlCacheOpt":14,"sqlNoCacheOpt":15,"sqlCalcFoundRowsOpt":16,"selectExprList":17,"ALL":18,"DISTINCT":19,"DISTINCTROW":20,"HIGH_PRIORITY":21,"MAX_STATEMENT_TIME":22,"=":23,"NUMERIC":24,"STRAIGHT_JOIN":25,"SQL_SMALL_RESULT":26,"SQL_BIG_RESULT":27,"SQL_BUFFER_RESULT":28,"SQL_CACHE":29,"SQL_NO_CACHE":30,"SQL_CALC_FOUND_ROWS":31,",":32,"selectExpr":33,"*":34,"SELECT_EXPR_STAR":35,"expr":36,"selectExprAliasOpt":37,"AS":38,"IDENTIFIER":39,"string":40,"QUOTED_IDENTIFIER":41,"STRING":42,"number":43,"EXPONENT_NUMERIC":44,"HEX_NUMERIC":45,"boolean":46,"TRUE":47,"FALSE":48,"literal":49,"NULL":50,"function_call":51,"(":52,"function_call_param_list":53,")":54,"function_call_param":55,"simple_expr":56,"bit_expr":57,"predicate":58,"boolean_primary":59,"$accept":0,"$end":1},
+terminals_: {2:"error",5:"EOF",6:"SELECT",18:"ALL",19:"DISTINCT",20:"DISTINCTROW",21:"HIGH_PRIORITY",22:"MAX_STATEMENT_TIME",23:"=",24:"NUMERIC",25:"STRAIGHT_JOIN",26:"SQL_SMALL_RESULT",27:"SQL_BIG_RESULT",28:"SQL_BUFFER_RESULT",29:"SQL_CACHE",30:"SQL_NO_CACHE",31:"SQL_CALC_FOUND_ROWS",32:",",34:"*",35:"SELECT_EXPR_STAR",38:"AS",39:"IDENTIFIER",41:"QUOTED_IDENTIFIER",42:"STRING",44:"EXPONENT_NUMERIC",45:"HEX_NUMERIC",47:"TRUE",48:"FALSE",50:"NULL",52:"(",54:")"},
+productions_: [0,[3,2],[4,12],[7,1],[7,1],[7,1],[7,0],[8,1],[8,0],[9,3],[9,0],[10,1],[10,0],[11,1],[11,0],[12,1],[12,0],[13,1],[13,0],[14,1],[14,0],[15,1],[15,0],[16,1],[16,0],[17,3],[17,1],[33,1],[33,1],[33,2],[37,0],[37,2],[37,1],[40,1],[40,1],[43,1],[43,1],[43,1],[46,1],[46,1],[49,1],[49,1],[49,1],[49,1],[51,4],[53,3],[53,1],[55,0],[55,1],[55,1],[55,1],[55,1],[56,1],[56,1],[56,1],[57,1],[58,1],[59,1],[36,1]],
 performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* action[1] */, $$ /* vstack */, _$ /* lstack */) {
 /* this == yyval */
 
@@ -89,20 +89,70 @@ break;
 case 2:
 
         return {
-          distinctOpt: $$[$0]
+          type: 'Select',
+          distinctOpt: $$[$0-10],
+          highPriorityOpt: $$[$0-9],
+          maxStateMentTimeOpt: $$[$0-8],
+          straightJoinOpt: $$[$0-7],
+          sqlSmallResultOpt: $$[$0-6],
+          sqlBigResultOpt: $$[$0-5],
+          sqlBufferResultOpt: $$[$0-4],
+          sqlCacheOpt: $$[$0-3],
+          sqlNoCacheOpt: $$[$0-2],
+          sqlCalcFoundRowsOpt: $$[$0-1],
+          selectExprList: $$[$0]
         }
       
 break;
-case 3: case 4: case 5:
+case 3: case 4: case 5: case 9: case 33: case 34: case 35: case 36: case 37: case 40: case 41: case 42: case 43: case 48: case 49: case 50: case 51: case 52: case 53: case 54: case 55: case 56: case 57: case 58:
  this.$ = $$[$0] 
 break;
-case 6:
+case 6: case 8: case 10: case 12: case 14: case 16: case 18: case 20: case 22: case 24: case 47:
  this.$ = null 
+break;
+case 7: case 11: case 13: case 15: case 17: case 19: case 21: case 23:
+ this.$ = true 
+break;
+case 25:
+ $$[$0].type = 'SelectExpr'; this.$.push($$[$0]); 
+break;
+case 26:
+ $$[$0].type = 'SelectExpr'; this.$ = [ $$[$0] ]; 
+break;
+case 27: case 28:
+ this.$ = { value: $$[$0] } 
+break;
+case 29:
+ this.$ = $$[$0-1]; this.$.alias = $$[$0].alias; this.$.hasAs = $$[$0].hasAs; 
+break;
+case 30:
+ this.$ = {alias: null, hasAs: null} 
+break;
+case 31:
+ this.$ = {alias: $$[$0], hasAs: true} 
+break;
+case 32:
+ this.$ = {alias: $$[$0], hasAs: false} 
+break;
+case 38:
+ this.$ = 'TRUE' 
+break;
+case 39:
+ this.$ = 'FALSE' 
+break;
+case 44:
+ this.$ = {type: 'FunctionCall', name: $$[$0-3], params: $$[$0-1]} 
+break;
+case 45:
+ $$[$0-2].push($$[$0]); this.$ = $$[$0-2]; 
+break;
+case 46:
+ this.$ = [$$[$0]]; 
 break;
 }
 },
-table: [{3:1,4:2,6:[1,3]},{1:[3]},{5:[1,4]},{5:[2,6],7:5,8:[1,6],9:[1,7],10:[1,8]},{1:[2,1]},{5:[2,2]},{5:[2,3]},{5:[2,4]},{5:[2,5]}],
-defaultActions: {4:[2,1],5:[2,2],6:[2,3],7:[2,4],8:[2,5]},
+table: [{3:1,4:2,6:[1,3]},{1:[3]},{5:[1,4]},o($V0,[2,6],{7:5,18:[1,6],19:[1,7],20:[1,8]}),{1:[2,1]},o($V1,[2,8],{8:9,21:[1,10]}),o($V0,[2,3]),o($V0,[2,4]),o($V0,[2,5]),o($V2,[2,10],{9:11,22:[1,12]}),o($V1,[2,7]),o($V3,[2,12],{10:13,25:[1,14]}),{23:[1,15]},o($V4,[2,14],{11:16,26:[1,17]}),o($V3,[2,11]),{24:[1,18]},o($V5,[2,16],{12:19,27:[1,20]}),o($V4,[2,13]),o($V2,[2,9]),o($V6,[2,18],{13:21,28:[1,22]}),o($V5,[2,15]),o($V7,[2,20],{14:23,29:[1,24]}),o($V6,[2,17]),o($V8,[2,22],{15:25,30:[1,26]}),o($V7,[2,19]),o($V9,[2,24],{16:27,31:[1,28]}),o($V8,[2,21]),{17:29,24:$Va,33:30,34:$Vb,35:$Vc,36:33,39:$Vd,40:41,41:$Ve,42:$Vf,43:42,44:$Vg,45:$Vh,46:43,47:$Vi,48:$Vj,49:38,50:$Vk,51:40,56:37,57:36,58:35,59:34},o($V9,[2,23]),{5:[2,2],32:[1,52]},o($Vl,[2,26]),o($Vl,[2,27]),o($Vl,[2,28]),o($Vl,[2,30],{37:53,38:[1,54],39:[1,55]}),o($Vm,[2,58]),o($Vm,[2,57]),o($Vm,[2,56]),o($Vm,[2,55]),o($Vm,[2,52]),o($Vm,[2,53],{52:[1,56]}),o($Vm,[2,54]),o($Vm,[2,40]),o($Vm,[2,41]),o($Vm,[2,42]),o([5,32,38,39],[2,43]),o($Vm,[2,33]),o($Vm,[2,34]),o($Vm,[2,35]),o($Vm,[2,36]),o($Vm,[2,37]),o($Vm,[2,38]),o($Vm,[2,39]),{24:$Va,33:57,34:$Vb,35:$Vc,36:33,39:$Vd,40:41,41:$Ve,42:$Vf,43:42,44:$Vg,45:$Vh,46:43,47:$Vi,48:$Vj,49:38,50:$Vk,51:40,56:37,57:36,58:35,59:34},o($Vl,[2,29]),{39:[1,58]},o($Vl,[2,32]),o($Vn,$Vo,{59:34,58:35,57:36,56:37,49:38,51:40,40:41,43:42,46:43,53:59,55:60,36:64,24:$Va,34:$Vp,35:$Vq,39:$Vd,41:$Ve,42:$Vf,44:$Vg,45:$Vh,47:$Vi,48:$Vj,50:$Vr}),o($Vl,[2,25]),o($Vl,[2,31]),{32:[1,66],54:[1,65]},o($Vn,[2,46]),o($Vn,[2,48]),o($Vn,[2,49]),o($Vn,[2,50]),o($Vn,[2,51]),o($Vm,[2,44]),o($Vn,$Vo,{59:34,58:35,57:36,56:37,49:38,51:40,40:41,43:42,46:43,36:64,55:67,24:$Va,34:$Vp,35:$Vq,39:$Vd,41:$Ve,42:$Vf,44:$Vg,45:$Vh,47:$Vi,48:$Vj,50:$Vr}),o($Vn,[2,45])],
+defaultActions: {4:[2,1]},
 parseError: function parseError(str, hash) {
     if (hash.recoverable) {
         this.trace(str);
@@ -581,34 +631,82 @@ options: {"case-insensitive":true},
 performAction: function anonymous(yy,yy_,$avoiding_name_collisions,YY_START) {
 var YYSTATE=YY_START;
 switch($avoiding_name_collisions) {
-case 0:/* skip whitespace */
+case 0:/* skip comments */
 break;
-case 1:/* skip comments */
+case 1:/* skip sql comments */
 break;
 case 2:/* skip sql comments */
 break;
-case 3:return 6
+case 3:/* skip whitespace */
 break;
-case 4:return 8
+case 4:return 6
 break;
-case 5:return 9
+case 5:return 18
 break;
-case 6:return 10
+case 6:return 19
 break;
-case 7:return 'STRING'
+case 7:return 20
 break;
-case 8:return 'STRING'
+case 8:return 21
 break;
-case 9:return 'NUMERIC'
+case 9:return 22
 break;
-case 10:return 5
+case 10:return 25
 break;
-case 11:return 'INVALID'
+case 11:return 26
+break;
+case 12:return 27
+break;
+case 13:return 28
+break;
+case 14:return 29
+break;
+case 15:return 30
+break;
+case 16:return 31
+break;
+case 17:return 34;
+break;
+case 18:return 35
+break;
+case 19:return 38
+break;
+case 20:return 47
+break;
+case 21:return 48
+break;
+case 22:return 50
+break;
+case 23:return 32
+break;
+case 24:return 23
+break;
+case 25:return 52
+break;
+case 26:return 54
+break;
+case 27:return 42
+break;
+case 28:return 42
+break;
+case 29:return 45
+break;
+case 30:return 24
+break;
+case 31:return 44
+break;
+case 32:return 39
+break;
+case 33:return 41
+break;
+case 34:return 5
+break;
+case 35:return 'INVALID'
 break;
 }
 },
-rules: [/^(?:\s+)/i,/^(?:[\/][*](.|\n)*?[*][\/])/i,/^(?:[-][-]\s.*\n)/i,/^(?:SELECT\b)/i,/^(?:ALL\b)/i,/^(?:DISTINCT\b)/i,/^(?:DISTINCTROW\b)/i,/^(?:['](\\.|[^'])*['])/i,/^(?:["](\\.|[^"])*["])/i,/^(?:[0-9]+(\.[0-9]+)?)/i,/^(?:$)/i,/^(?:.)/i],
-conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11],"inclusive":true}}
+rules: [/^(?:[\/][*](.|\n)*?[*][\/])/i,/^(?:[-][-]\s.*\n)/i,/^(?:[#]\s.*\n)/i,/^(?:\s+)/i,/^(?:SELECT\b)/i,/^(?:ALL\b)/i,/^(?:DISTINCT\b)/i,/^(?:DISTINCTROW\b)/i,/^(?:HIGH_PRIORITY\b)/i,/^(?:MAX_STATEMENT_TIME\b)/i,/^(?:STRAIGHT_JOIN\b)/i,/^(?:SQL_SMALL_RESULT\b)/i,/^(?:SQL_BIG_RESULT\b)/i,/^(?:SQL_BUFFER_RESULT\b)/i,/^(?:SQL_CACHE\b)/i,/^(?:SQL_NO_CACHE\b)/i,/^(?:SQL_CALC_FOUND_ROWS\b)/i,/^(?:\*)/i,/^(?:([a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]+\.){1,2}\*)/i,/^(?:AS\b)/i,/^(?:TRUE\b)/i,/^(?:FALSE\b)/i,/^(?:NULL\b)/i,/^(?:,)/i,/^(?:=)/i,/^(?:\()/i,/^(?:\))/i,/^(?:['](\\.|[^'])*['])/i,/^(?:["](\\.|[^"])*["])/i,/^(?:[0][x][0-9a-fA-F]+)/i,/^(?:[-]?[0-9]+(\.[0-9]+)?)/i,/^(?:[-]?[0-9]+(\.[0-9]+)?[eE][-][0-9]+(\.[0-9]+)?)/i,/^(?:[a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*)/i,/^(?:['"][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*["'])/i,/^(?:$)/i,/^(?:.)/i],
+conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35],"inclusive":true}}
 });
 return lexer;
 })();
