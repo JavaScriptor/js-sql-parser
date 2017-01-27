@@ -147,24 +147,28 @@ selectExprAliasOpt
   ;
 
 string
-  : QUOTED_IDENTIFIER { $$ = $1 }
-  | STRING { $$ = $1 }
+  : QUOTED_IDENTIFIER { $$ = { type: 'String', value: $1 } }
+  | STRING { $$ = { type: 'String', value: $1 } }
   ;
 number
-  : NUMERIC { $$ = $1 }
-  | EXPONENT_NUMERIC = { $$ = $1 }
-  | HEX_NUMERIC = { $$ = $1 }
+  : NUMERIC { $$ = { type: 'Number', value: $1 } }
+  | EXPONENT_NUMERIC = { $$ = { type: 'Number', value: $1 } }
+  | HEX_NUMERIC = { $$ = { type: 'Number', value: $1 } }
   ;
 boolean
-  : TRUE { $$ = 'TRUE' }
-  | FALSE { $$ = 'FALSE' }
+  : TRUE { $$ = { type: 'Boolean', value: 'TRUE' } }
+  | FALSE { $$ = { type: 'Boolean', value: 'FALSE' } }
+  ;
+null
+  : NULL { $$ = { type: 'Null', value: 'null' } }
   ;
 literal
   : string { $$ = $1 }
   | number { $$ = $1 }
   | boolean { $$ = $1 }
-  | NULL { $$ = $1 }
+  | null { $$ = $1 }
   ;
+
 function_call
   : IDENTIFIER '(' function_call_param_list ')' { $$ = {type: 'FunctionCall', name: $1, params: $3} }
   ;
@@ -179,9 +183,12 @@ function_call_param
   | SELECT_EXPR_STAR { $$ = $1 }
   | expr { $$ = $1 }
   ;
+identifier
+  : IDENTIFIER { $$ = { type: 'Identifier', value: $1 } }
+  ;
 simple_expr
   : literal { $$ = $1 }
-  | IDENTIFIER { $$ = $1 }
+  | identifier { $$ = $1 }
   | function_call { $$ = $1 }
   ;
 bit_expr
