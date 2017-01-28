@@ -30,11 +30,34 @@ AS                                                                 return 'AS'
 TRUE                                                               return 'TRUE'
 FALSE                                                              return 'FALSE'
 NULL                                                               return 'NULL'
+COLLATE                                                            return 'COLLATE'
+BINARY                                                             return 'BINARY'
+ROW                                                                return 'ROW'
+EXISTS                                                             return 'EXISTS'
+CASE                                                               return 'CASE'
+WHEN                                                               return 'WHEN'
+THEN                                                               return 'THEN'
+ELSE                                                               return 'ELSE'
+END                                                                return 'END'
+DIV                                                                return 'DIV'
+MOD                                                                return 'MOD'
 
 ','                                                                return ','
 '='                                                                return '='
 '('                                                                return '('
 ')'                                                                return ')'
+'~'                                                                return '~'
+'!'                                                                return '!'
+'|'                                                                return '|'
+'&'                                                                return '&'
+'<<'                                                               return '<<'
+'>>'                                                               return '>>'
+'+'                                                                return '+'
+'-'                                                                return '-'
+'*'                                                                return '*'
+'/'                                                                return '/'
+'%'                                                                return '%'
+'^'                                                                return '^'
                                                                  
 ['](\\.|[^'])*[']                                                  return 'STRING'
 ["](\\.|[^"])*["]                                                  return 'STRING'
@@ -178,7 +201,6 @@ function_call_param_list
   ;
 function_call_param
   : { $$ = null }
-  | NULL { $$ = $1 }
   | '*' { $$ = $1 }
   | SELECT_EXPR_STAR { $$ = $1 }
   | expr { $$ = $1 }
@@ -186,13 +208,53 @@ function_call_param
 identifier
   : IDENTIFIER { $$ = { type: 'Identifier', value: $1 } }
   ;
+case_expr
+  : { $$ = null }
+  | expr { $$ = $1 }
+  ;
+when_then_list
+  : WHEN expr THEN expr { $$ = { type: 'WhenThenList', value: [ { when: $2, then: $4 } ] }; }
+  | when_then_list WHEN expr THEN expr { $$ = $1; $$.value.push({ when: $3, then: $5 }); }
+  ;
+case_when_else
+  : { $$ = null }
+  | ELSE expr { $$ = $2 }
+  ;
+case_when
+  : CASE case_expr when_then_list case_when_else END { $$ = { type: 'CaseWhen', caseExpr: $2, whenThenList: $3, else: $4 } }
+  ;
+simple_expr_prefix
+  : '+' simple_expr { $$ = $2; if (!$$.prefix) $$.prefix = [ $1 ]; else $$.prefix.push($1); }
+  | '-' simple_expr { $$ = $2; if (!$$.prefix) $$.prefix = [ $1 ]; else $$.prefix.push($1); }
+  | '~' simple_expr { $$ = $2; if (!$$.prefix) $$.prefix = [ $1 ]; else $$.prefix.push($1); }
+  | '!' simple_expr { $$ = $2; if (!$$.prefix) $$.prefix = [ $1 ]; else $$.prefix.push($1); }
+  |  BINARY simple_expr { $$ = $2; if (!$$.prefix) $$.prefix = [ $1 ]; else $$.prefix.push($1); }
+  ;
 simple_expr
   : literal { $$ = $1 }
   | identifier { $$ = $1 }
   | function_call { $$ = $1 }
+  | simple_expr_prefix { $$ = $1 }
+  | '(' expr_list ')' { $$ = $2; $$.hasParentheses = true; }
+  | ROW '(' expr_list ')' { $$ = $3; $$.hasParentheses = true; $$.hasRow = true; }
+  | '(' selectClause ')' { $$ = { type: 'SubQuery', value: $2 } }
+  | EXISTS '(' selectClause ')' { $$ = { type: 'SubQuery', value: $3 } }
+  | case_when { $$ = $1 }
   ;
 bit_expr
   : simple_expr { $$ = $1 }
+  | simple_expr '|' bit_expr { $$ = { type: 'BitExpression', operator: '|', left: $1, right: $3 } } 
+  | simple_expr '&' bit_expr { $$ = { type: 'BitExpression', operator: '&', left: $1, right: $3 } }
+  | simple_expr '<<' bit_expr { $$ = { type: 'BitExpression', operator: '<<', left: $1, right: $3 } }
+  | simple_expr '>>' bit_expr { $$ = { type: 'BitExpression', operator: '>>', left: $1, right: $3 } }
+  | simple_expr '+' bit_expr { $$ = { type: 'BitExpression', operator: '|', left: $1, right: $3 } }
+  | simple_expr '-' bit_expr { $$ = { type: 'BitExpression', operator: '|', left: $1, right: $3 } }
+  | simple_expr '*' bit_expr { $$ = { type: 'BitExpression', operator: '|', left: $1, right: $3 } }
+  | simple_expr '/' bit_expr { $$ = { type: 'BitExpression', operator: '|', left: $1, right: $3 } }
+  | simple_expr DIV bit_expr { $$ = { type: 'BitExpression', operator: 'DIV', left: $1, right: $3 } }
+  | simple_expr MOD bit_expr { $$ = { type: 'BitExpression', operator: 'MOD', left: $1, right: $3 } }
+  | simple_expr '%' bit_expr { $$ = { type: 'BitExpression', operator: '%', left: $1, right: $3 } }
+  | simple_expr '^' bit_expr { $$ = { type: 'BitExpression', operator: '^', left: $1, right: $3 } }
   ;
 predicate
   : bit_expr { $$ = $1 }
@@ -202,4 +264,8 @@ boolean_primary
   ;
 expr
   : boolean_primary { $$ = $1 }
+  ;
+expr_list
+  : expr { $$ = { type: 'ExpressionList', value: [ $1 ] } }
+  | expr_list ',' expr { $$ = $1; $$.value.push($3); }
   ;

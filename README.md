@@ -8,6 +8,20 @@
 
 sql grammar follows https://dev.mysql.com/doc/refman/5.7/en/select.html
 
+## unsupport currently
+
+- Hexadecimal Literals as x'01af' X'01af', but 0x01af is supported.
+- keyword COLLATE.
+- parammarker: keyword PREPARE / EXECUTE / DEALLOCATE
+- variable: keyword SET / CREATE PROCEDURE / CREATE FUNCTION
+- identifier expr: ODBC escape syntax
+- matchexpr: Full-Text Search Functions. //to support
+- intervalexpr: Date INTERVAL keyword. //to support
+
+note: 
+this sql parser doesn't keep operator precedence currently (in bitExpr). it will be support later.
+it keep parser.parse and parse.stringify is stable.
+
 ## commonjs usage
 
 `npm install --save js-sql-parser`
