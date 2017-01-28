@@ -18,10 +18,6 @@ sql grammar follows https://dev.mysql.com/doc/refman/5.7/en/select.html
 - matchexpr: Full-Text Search Functions. //to support
 - intervalexpr: Date INTERVAL keyword. //to support
 
-note: 
-this sql parser doesn't keep operator precedence currently (in bitExpr). it will be support later.
-it keep parser.parse and parse.stringify is stable.
-
 ## commonjs usage
 
 `npm install --save js-sql-parser`

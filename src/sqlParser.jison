@@ -6,72 +6,105 @@
 
 %%
 
-[/][*](.|\n)*?[*][/]                                               /* skip comments */
-[-][-]\s.*\n                                                       /* skip sql comments */
-[#]\s.*\n                                                          /* skip sql comments */
-\s+                                                                /* skip whitespace */
-                                                                   
-SELECT                                                             return 'SELECT'
-ALL                                                                return 'ALL'
-DISTINCT                                                           return 'DISTINCT'
-DISTINCTROW                                                        return 'DISTINCTROW'
-HIGH_PRIORITY                                                      return 'HIGH_PRIORITY'
-MAX_STATEMENT_TIME                                                 return 'MAX_STATEMENT_TIME'
-STRAIGHT_JOIN                                                      return 'STRAIGHT_JOIN'
-SQL_SMALL_RESULT                                                   return 'SQL_SMALL_RESULT'
-SQL_BIG_RESULT                                                     return 'SQL_BIG_RESULT'
-SQL_BUFFER_RESULT                                                  return 'SQL_BUFFER_RESULT'
-SQL_CACHE                                                          return 'SQL_CACHE'
-SQL_NO_CACHE                                                       return 'SQL_NO_CACHE'
-SQL_CALC_FOUND_ROWS                                                return 'SQL_CALC_FOUND_ROWS'
-'*'                                                                return '*';
-([a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]+\.){1,2}\*        return 'SELECT_EXPR_STAR'
-AS                                                                 return 'AS'
-TRUE                                                               return 'TRUE'
-FALSE                                                              return 'FALSE'
-NULL                                                               return 'NULL'
-COLLATE                                                            return 'COLLATE'
-BINARY                                                             return 'BINARY'
-ROW                                                                return 'ROW'
-EXISTS                                                             return 'EXISTS'
-CASE                                                               return 'CASE'
-WHEN                                                               return 'WHEN'
-THEN                                                               return 'THEN'
-ELSE                                                               return 'ELSE'
-END                                                                return 'END'
-DIV                                                                return 'DIV'
-MOD                                                                return 'MOD'
+[/][*](.|\n)*?[*][/]                                              /* skip comments */
+[-][-]\s.*\n                                                      /* skip sql comments */
+[#]\s.*\n                                                         /* skip sql comments */
+\s+                                                               /* skip whitespace */
+                                                                  
+SELECT                                                            return 'SELECT'
+ALL                                                               return 'ALL'
+ANY                                                               return 'ANY'
+DISTINCT                                                          return 'DISTINCT'
+DISTINCTROW                                                       return 'DISTINCTROW'
+HIGH_PRIORITY                                                     return 'HIGH_PRIORITY'
+MAX_STATEMENT_TIME                                                return 'MAX_STATEMENT_TIME'
+STRAIGHT_JOIN                                                     return 'STRAIGHT_JOIN'
+SQL_SMALL_RESULT                                                  return 'SQL_SMALL_RESULT'
+SQL_BIG_RESULT                                                    return 'SQL_BIG_RESULT'
+SQL_BUFFER_RESULT                                                 return 'SQL_BUFFER_RESULT'
+SQL_CACHE                                                         return 'SQL_CACHE'
+SQL_NO_CACHE                                                      return 'SQL_NO_CACHE'
+SQL_CALC_FOUND_ROWS                                               return 'SQL_CALC_FOUND_ROWS'
+'*'                                                               return '*';
+([a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]+\.){1,2}\*       return 'SELECT_EXPR_STAR'
+AS                                                                return 'AS'
+TRUE                                                              return 'TRUE'
+FALSE                                                             return 'FALSE'
+NULL                                                              return 'NULL'
+COLLATE                                                           return 'COLLATE'
+BINARY                                                            return 'BINARY'
+ROW                                                               return 'ROW'
+EXISTS                                                            return 'EXISTS'
+CASE                                                              return 'CASE'
+WHEN                                                              return 'WHEN'
+THEN                                                              return 'THEN'
+ELSE                                                              return 'ELSE'
+END                                                               return 'END'
+DIV                                                               return 'DIV'
+MOD                                                               return 'MOD'
+NOT                                                               return 'NOT'
+BETWEEN                                                           return 'BETWEEN'
+SOUNDS                                                            return 'SOUNDS'
+LIKE                                                              return 'LIKE'
+ESCAPE                                                            return 'ESCAPE'
+REGEXP                                                            return 'REGEXP'
+IS                                                                return 'IS'
+UNKNOWN                                                           return 'UNKNOWN'
+AND                                                               return 'AND'
+OR                                                                return 'OR'
+XOR                                                               return 'XOR'
 
-','                                                                return ','
-'='                                                                return '='
-'('                                                                return '('
-')'                                                                return ')'
-'~'                                                                return '~'
-'!'                                                                return '!'
-'|'                                                                return '|'
-'&'                                                                return '&'
-'<<'                                                               return '<<'
-'>>'                                                               return '>>'
-'+'                                                                return '+'
-'-'                                                                return '-'
-'*'                                                                return '*'
-'/'                                                                return '/'
-'%'                                                                return '%'
-'^'                                                                return '^'
+','                                                               return ','
+'='                                                               return '='
+'('                                                               return '('
+')'                                                               return ')'
+'~'                                                               return '~'
+'!'                                                               return '!'
+'|'                                                               return '|'
+'&'                                                               return '&'
+'<<'                                                              return '<<'
+'>>'                                                              return '>>'
+'+'                                                               return '+'
+'-'                                                               return '-'
+'*'                                                               return '*'
+'/'                                                               return '/'
+'%'                                                               return '%'
+'^'                                                               return '^'
+'>='                                                              return '>='
+'>'                                                               return '>'
+'<'                                                               return '<'
+'<='                                                              return '<='
+'<>'                                                              return '<>'
+'!='                                                              return '!='
+'<=>'                                                             return '<=>'
                                                                  
-['](\\.|[^'])*[']                                                  return 'STRING'
-["](\\.|[^"])*["]                                                  return 'STRING'
-[0][x][0-9a-fA-F]+                                                 return 'HEX_NUMERIC'
-[-]?[0-9]+(\.[0-9]+)?                                              return 'NUMERIC'
-[-]?[0-9]+(\.[0-9]+)?[eE][-][0-9]+(\.[0-9]+)?                      return 'EXPONENT_NUMERIC'
+['](\\.|[^'])*[']                                                 return 'STRING'
+["](\\.|[^"])*["]                                                 return 'STRING'
+[0][x][0-9a-fA-F]+                                                return 'HEX_NUMERIC'
+[-]?[0-9]+(\.[0-9]+)?                                             return 'NUMERIC'
+[-]?[0-9]+(\.[0-9]+)?[eE][-][0-9]+(\.[0-9]+)?                     return 'EXPONENT_NUMERIC'
 
-[a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*                   return 'IDENTIFIER'
-['"][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*["']           return 'QUOTED_IDENTIFIER'
+[a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*                  return 'IDENTIFIER'
+\.                                                                return 'DOT'
+['"][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*["']          return 'QUOTED_IDENTIFIER'
                                                                  
-<<EOF>>                                                            return 'EOF'
-.                                                                  return 'INVALID'
+<<EOF>>                                                           return 'EOF'
+.                                                                 return 'INVALID'
 
 /lex
+
+%left OR XOR '||'
+%left '&&' AND
+%left '|'
+%left '^'
+%left '&'
+%left '=' '!='        /* = in sql equels == */
+%left '>' '>=' '<' '<='
+%left '<<' '>>'
+%left '+' '-'
+%left MULTI DIV MOD '/' '%'
+%right UPLUS UMINUS UNOT '~' NOT
+%left DOT
 
 %start main
 
@@ -191,7 +224,6 @@ literal
   | boolean { $$ = $1 }
   | null { $$ = $1 }
   ;
-
 function_call
   : IDENTIFIER '(' function_call_param_list ')' { $$ = {type: 'FunctionCall', name: $1, params: $3} }
   ;
@@ -203,10 +235,12 @@ function_call_param
   : { $$ = null }
   | '*' { $$ = $1 }
   | SELECT_EXPR_STAR { $$ = $1 }
+  | DISTINCT expr { $$ = { type: 'FunctionCallParam', distinctOpt: $1, value: $2 } }
   | expr { $$ = $1 }
   ;
 identifier
   : IDENTIFIER { $$ = { type: 'Identifier', value: $1 } }
+  | identifier DOT IDENTIFIER { $$ = $1; $1.value += '.' + $3 }
   ;
 case_expr
   : { $$ = null }
@@ -224,10 +258,10 @@ case_when
   : CASE case_expr when_then_list case_when_else END { $$ = { type: 'CaseWhen', caseExpr: $2, whenThenList: $3, else: $4 } }
   ;
 simple_expr_prefix
-  : '+' simple_expr { $$ = $2; if (!$$.prefix) $$.prefix = [ $1 ]; else $$.prefix.push($1); }
-  | '-' simple_expr { $$ = $2; if (!$$.prefix) $$.prefix = [ $1 ]; else $$.prefix.push($1); }
+  : '+' simple_expr %prec UPLUS { $$ = $2; if (!$$.prefix) $$.prefix = [ $1 ]; else $$.prefix.push($1); }
+  | '-' simple_expr %prec UMINUS { $$ = $2; if (!$$.prefix) $$.prefix = [ $1 ]; else $$.prefix.push($1); }
   | '~' simple_expr { $$ = $2; if (!$$.prefix) $$.prefix = [ $1 ]; else $$.prefix.push($1); }
-  | '!' simple_expr { $$ = $2; if (!$$.prefix) $$.prefix = [ $1 ]; else $$.prefix.push($1); }
+  | '!' simple_expr %prec UNOT { $$ = $2; if (!$$.prefix) $$.prefix = [ $1 ]; else $$.prefix.push($1); }
   |  BINARY simple_expr { $$ = $2; if (!$$.prefix) $$.prefix = [ $1 ]; else $$.prefix.push($1); }
   ;
 simple_expr
@@ -247,23 +281,63 @@ bit_expr
   | simple_expr '&' bit_expr { $$ = { type: 'BitExpression', operator: '&', left: $1, right: $3 } }
   | simple_expr '<<' bit_expr { $$ = { type: 'BitExpression', operator: '<<', left: $1, right: $3 } }
   | simple_expr '>>' bit_expr { $$ = { type: 'BitExpression', operator: '>>', left: $1, right: $3 } }
-  | simple_expr '+' bit_expr { $$ = { type: 'BitExpression', operator: '|', left: $1, right: $3 } }
-  | simple_expr '-' bit_expr { $$ = { type: 'BitExpression', operator: '|', left: $1, right: $3 } }
-  | simple_expr '*' bit_expr { $$ = { type: 'BitExpression', operator: '|', left: $1, right: $3 } }
-  | simple_expr '/' bit_expr { $$ = { type: 'BitExpression', operator: '|', left: $1, right: $3 } }
+  | simple_expr '+' bit_expr { $$ = { type: 'BitExpression', operator: '+', left: $1, right: $3 } }
+  | simple_expr '-' bit_expr { $$ = { type: 'BitExpression', operator: '-', left: $1, right: $3 } }
+  | simple_expr '*' bit_expr %prec MULTI { $$ = { type: 'BitExpression', operator: '*', left: $1, right: $3 } }
+  | simple_expr '/' bit_expr { $$ = { type: 'BitExpression', operator: '/', left: $1, right: $3 } }
   | simple_expr DIV bit_expr { $$ = { type: 'BitExpression', operator: 'DIV', left: $1, right: $3 } }
   | simple_expr MOD bit_expr { $$ = { type: 'BitExpression', operator: 'MOD', left: $1, right: $3 } }
   | simple_expr '%' bit_expr { $$ = { type: 'BitExpression', operator: '%', left: $1, right: $3 } }
   | simple_expr '^' bit_expr { $$ = { type: 'BitExpression', operator: '^', left: $1, right: $3 } }
   ;
+not_opt
+  : { $$ = false }
+  | NOT { $$ = true }
+  ;
+escape_opt
+  : { $$ = null }
+  | ESCAPE simple_expr { $$ = $2 }
+  ;
 predicate
   : bit_expr { $$ = $1 }
+  | bit_expr not_opt IN '(' selectClause ')' { $$ = { type: 'InPredicate', hasNot: $2, left: $1 ,right: $5 } }
+  | bit_expr not_opt BETWEEN bit_expr AND predicate { $$ = { type: 'BetweenPredicate', hasNot: $2, left: $1, right: { left: $3, right: $5 } } }
+  | bit_expr SOUNDS LIKE bit_expr { $$ = { type: 'SoundsLikePredicate', hasNot: false, left: $1, right: $4 } }
+  | bit_expr not_opt LIKE simple_expr escape_opt { $$ = { type: 'LikePredicate', hasNot: $2, left: $1, right: $4, escape: $5 } }
+  | bit_expr not_opt REGEXP bit_expr { $$ = { type: 'RegexpPredicate', hasNot: $2, left: $1, right: $4 } }
   ;
+comparison_operator
+  : '=' { $$ = $1 }
+  | '>=' { $$ = $1 }
+  | '>' { $$ = $1 }
+  | '<=' { $$ = $1 }
+  | '<' { $$ = $1 }
+  | '<>' { $$ = $1 }
+  | '!=' { $$ = $1 }
+  ;
+sub_query_data_set_opt
+ : ALL { $$ = $1 }
+ | ANY { $$ = $1 }
+ ;
 boolean_primary
   : predicate { $$ = $1 }
+  | boolean_primary IS not_opt NULL { $$ = { type: 'IsNullBooleanPrimary', hasNot: $3 , value: $1 } }
+  | boolean_primary comparison_operator predicate { $$ = { type: 'ComparisonBooleanPrimary', left: $1, operator: $2, right: $3 } }
+  | boolean_primary comparison_operator sub_query_data_set_opt '(' selectClause ')' { $$ = { type: 'ComparisonSubQueryBooleanPrimary', operator: $2, subQueryOpt: $3, left: $1, right: $5 } }
+  ;
+boolean_extra
+  : boolean { $$ = $1 }
+  | UNKNOWN { $$ = { type: 'BooleanExtra', value: $1 } }
   ;
 expr
   : boolean_primary { $$ = $1 }
+  | boolean_primary IS not_opt boolean_extra { $$ = { type: 'IsExpression', hasNot: $3, left: $1, right: $4 } }
+  | NOT expr { $$ = { type: 'NotExpression', value: $2 } }
+  | expr '&&' expr { $$ = { type: 'AndOpExpression', left: $1, right: $3 } }
+  | expr '||' expr { $$ = { type: 'OrOpExpression', left: $1, right: $3 } }
+  | expr OR expr { $$ = { type: 'OrExpression', left: $1, right: $3 } }
+  | expr AND expr { $$ = { type: 'AndExpression', left: $1, right: $3 } }
+  | expr XOR expr { $$ = { type: 'XORExpression', left: $1, right: $3 } }
   ;
 expr_list
   : expr { $$ = { type: 'ExpressionList', value: [ $1 ] } }
