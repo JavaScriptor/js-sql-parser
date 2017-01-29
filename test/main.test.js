@@ -40,7 +40,7 @@ describe('simple sql support', function () {
   it ('test6', function () {
     testParser(`
       SELECT t3.gender as tb_basic___gender, t3.age_level as tb_basic___age_level, t2.brand_id as tb_basic___user_collect_m___brand_id, t2.cat1_id as
-      tb_basic___user_collect_m___cat1_id, COUNT(distinct t1.aid) as aid_uniq_count
+      tb_basic___user_collect_m___cat1_id, COUNT(distinct t1.aid) as aid_uniq_count from a
     `);
   })
 });

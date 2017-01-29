@@ -53,6 +53,17 @@ UNKNOWN                                                           return 'UNKNOW
 AND                                                               return 'AND'
 OR                                                                return 'OR'
 XOR                                                               return 'XOR'
+FROM                                                              return 'FROM'
+PARTITION                                                         return 'PARTITION'
+USE                                                               return 'USE'
+INDEX                                                             return 'INDEX'
+KEY                                                               return 'KEY'
+FOR                                                               return 'FOR'
+JOIN                                                              return 'JOIN'
+ORDER\s+BY                                                        return 'ORDER_BY'
+GROUP\s+BY                                                        return 'GROUP_BY'
+IGNORE                                                            return 'IGNORE'
+FORCE                                                             return 'FORCE'
 
 ','                                                               return ','
 '='                                                               return '='
@@ -77,6 +88,8 @@ XOR                                                               return 'XOR'
 '<>'                                                              return '<>'
 '!='                                                              return '!='
 '<=>'                                                             return '<=>'
+'{'                                                               return '{'
+'}'                                                               return '}'
                                                                  
 ['](\\.|[^'])*[']                                                 return 'STRING'
 ["](\\.|[^"])*["]                                                 return 'STRING'
@@ -93,6 +106,9 @@ XOR                                                               return 'XOR'
 
 /lex
 
+%left ',' TABLE_REF_COMMA
+%left INDEX_HINT_COMMA
+%left INDEX_LIST_COMMA
 %left OR XOR '||'
 %left '&&' AND
 %left '|'
@@ -127,6 +143,7 @@ selectClause
       sqlNoCacheOpt
       sqlCalcFoundRowsOpt
       selectExprList
+      selectDataSetOpt
       {
         return {
           type: 'Select',
@@ -140,7 +157,8 @@ selectClause
           sqlCacheOpt: $9,
           sqlNoCacheOpt: $10,
           sqlCalcFoundRowsOpt: $11,
-          selectExprList: $12
+          selectExprList: $12,
+          from: $13.from
         }
       }
   ;
@@ -272,7 +290,8 @@ simple_expr
   | '(' expr_list ')' { $$ = $2; $$.hasParentheses = true; }
   | ROW '(' expr_list ')' { $$ = $3; $$.hasParentheses = true; $$.hasRow = true; }
   | '(' selectClause ')' { $$ = { type: 'SubQuery', value: $2 } }
-  | EXISTS '(' selectClause ')' { $$ = { type: 'SubQuery', value: $3 } }
+  | EXISTS '(' selectClause ')' { $$ = { type: 'ExistsSubQuery', value: $3 } }
+  | '{' identifier expr '}' { $$ = { type: 'IdentifierExpr', identifier: $2, value: $3 } }
   | case_when { $$ = $1 }
   ;
 bit_expr
@@ -342,4 +361,71 @@ expr
 expr_list
   : expr { $$ = { type: 'ExpressionList', value: [ $1 ] } }
   | expr_list ',' expr { $$ = $1; $$.value.push($3); }
+  ;
+
+selectDataSetOpt
+  : { $$ = {} }
+  | FROM table_refrences { $$ = { from: $2 } }
+  ;
+table_refrences
+  : escaped_table_reference { $$ = { type: 'TableRefrences', value: [ $1 ] } }
+  | table_refrences ',' escaped_table_reference %prec TABLE_REF_COMMA { $$ = $1; $1.value.push($3); }
+  ;
+escaped_table_reference
+  : table_reference { $$ = { type: 'TableRefrence', value: $1 } }
+  | '{' OJ table_reference '}' { $$ = { type: 'TableRefrence', hasOj: true, value: $3 } }
+  ;
+table_reference
+  : table_factor { $$ = $1 }
+  | join_table { $$ = $1 }
+  ;
+partition_names
+  : identifier { $$ = { type: 'Partitions', value: [ $1 ] } }
+  | partition_names ',' identifier { $$ = $1; $1.value.push($3) }
+  ;
+partitionOpt
+  : { $$ = null }
+  | PARTITION '(' partition_names ')' { $$ = $3 }
+  ;
+aliasOpt
+  : { $$ = {alias: null, hasAs: null} }
+  | AS identifier { $$ = { hasAs: true, alias: $2 } }
+  | identifier { $$ = { hasAs: false, alias: $1 } }
+  ;
+index_or_key
+  : INDEX { $$ = $1 }
+  | KEY { $$ = $1 }
+  ;
+for_opt
+  : { $$ = null }
+  | FOR JOIN { $$ = { type: 'ForOptIndexHint', value: $2 } }
+  | FOR ORDER_BY { $$ = { type: 'ForOptIndexHint', value: $2 } }
+  | FOR GROUP_BY { $$ = { type: 'ForOptIndexHint', value: $2 } }
+  ;
+index_name
+  : identifier { $$ = $1 }
+  ;
+index_list
+  : index_name { $$ = { type: 'IndexList', value: [ $1 ] } }
+  | index_list ',' index_name %prec INDEX_LIST_COMMA { $$ = $1; $$.value.push($3); }
+  ;
+index_list_opt
+  : { $$ = null }
+  | index_list { $$ = $1 }
+  ;
+index_hint_list_opt
+  : { $$ = null }
+  | index_hint_list { $$ = $1 }
+  ;
+index_hint_list
+  : index_hint { $$ = { type: 'IndexHintList', value: [ $1 ] } }
+  | index_hint_list ',' index_hint %prec INDEX_HINT_COMMA { $$ = $1; $$.value.push($3); }
+  ;
+index_hint
+  : USE index_or_key for_opt '(' index_list_opt ')' { $$ = { type: 'UseIndexHint', value: $5, forOpt: $3, indexOrKey: $2 } }
+  | IGNORE index_or_key for_opt '(' index_list ')' { $$ = { type: 'IgnoreIndexHint', value: $5, forOpt: $3, indexOrKey: $2 } }
+  | FORCE index_or_key for_opt '(' index_list ')' { $$ = { type: 'ForceIndexHint', value: $5, forOpt: $3, indexOrKey: $2 } }
+  ;
+table_factor
+  : identifier partitionOpt aliasOpt index_hint_list_opt { $$ = { type: 'TableFactor', value: $1, partition: $2, alias: $3.alias, hasAs: $3.hasAs } }
   ;
