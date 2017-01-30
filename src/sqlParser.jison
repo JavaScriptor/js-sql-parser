@@ -64,6 +64,10 @@ ORDER\s+BY                                                        return 'ORDER_
 GROUP\s+BY                                                        return 'GROUP_BY'
 IGNORE                                                            return 'IGNORE'
 FORCE                                                             return 'FORCE'
+INNER                                                             return 'INNER'
+CROSS                                                             return 'CROSS'
+ON                                                                return 'ON'
+USING                                                             return 'USING'
 
 ','                                                               return ','
 '='                                                               return '='
@@ -107,8 +111,8 @@ FORCE                                                             return 'FORCE'
 /lex
 
 %left ',' TABLE_REF_COMMA
+%left INDEX_HINT_LIST
 %left INDEX_HINT_COMMA
-%left INDEX_LIST_COMMA
 %left OR XOR '||'
 %left '&&' AND
 %left '|'
@@ -260,6 +264,10 @@ identifier
   : IDENTIFIER { $$ = { type: 'Identifier', value: $1 } }
   | identifier DOT IDENTIFIER { $$ = $1; $1.value += '.' + $3 }
   ;
+identifier_list
+  : identifier { $$ = { type: 'IdentifierList', value: [ $1 ] } }
+  | identifier_list ',' identifier { $$ = $1; $1.value.push($3); }
+  ;
 case_expr
   : { $$ = null }
   | expr { $$ = $1 }
@@ -375,6 +383,22 @@ escaped_table_reference
   : table_reference { $$ = { type: 'TableRefrence', value: $1 } }
   | '{' OJ table_reference '}' { $$ = { type: 'TableRefrence', hasOj: true, value: $3 } }
   ;
+join_inner_cross
+  : { $$ = null }
+  | INNER { $$ = $1 }
+  | CROSS { $$ = $1 }
+  ;
+join_table
+  : table_reference join_inner_cross JOIN table_factor join_condition_opt { $$ = { type: 'InnerCrossJoinTable', innerCross: $2, left: $1, right: $4, condition: $5 } }
+  ;
+join_condition_opt
+  : { $$ = null }
+  | join_condition { $$ = $1 }
+  ;
+join_condition
+  : ON expr { $$ = { type: 'OnJoinCondition', value: $2 } }
+  | USING '(' identifier_list ')' { $$ = { type: 'UsingJoinCondition', value: $3 } }
+  ;
 table_reference
   : table_factor { $$ = $1 }
   | join_table { $$ = $1 }
@@ -407,7 +431,7 @@ index_name
   ;
 index_list
   : index_name { $$ = { type: 'IndexList', value: [ $1 ] } }
-  | index_list ',' index_name %prec INDEX_LIST_COMMA { $$ = $1; $$.value.push($3); }
+  | index_list ',' index_name { $$ = $1; $$.value.push($3); }
   ;
 index_list_opt
   : { $$ = null }
@@ -415,7 +439,7 @@ index_list_opt
   ;
 index_hint_list_opt
   : { $$ = null }
-  | index_hint_list { $$ = $1 }
+  | index_hint_list %prec INDEX_HINT_LIST { $$ = $1 }
   ;
 index_hint_list
   : index_hint { $$ = { type: 'IndexHintList', value: [ $1 ] } }
@@ -428,4 +452,6 @@ index_hint
   ;
 table_factor
   : identifier partitionOpt aliasOpt index_hint_list_opt { $$ = { type: 'TableFactor', value: $1, partition: $2, alias: $3.alias, hasAs: $3.hasAs } }
+  | '(' selectClause ')' aliasOpt { $$ = { type: 'SubQuery', value: $2, alias: $4.alias, hasAs: $4.hasAs } }
+  | '(' table_refrences ')' { $$ = $2; $$.hasParentheses = true }
   ;
