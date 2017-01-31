@@ -25,7 +25,6 @@ SQL_BUFFER_RESULT                                                 return 'SQL_BU
 SQL_CACHE                                                         return 'SQL_CACHE'
 SQL_NO_CACHE                                                      return 'SQL_NO_CACHE'
 SQL_CALC_FOUND_ROWS                                               return 'SQL_CALC_FOUND_ROWS'
-'*'                                                               return '*';
 ([a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]+\.){1,2}\*       return 'SELECT_EXPR_STAR'
 AS                                                                return 'AS'
 TRUE                                                              return 'TRUE'
@@ -68,32 +67,36 @@ INNER                                                             return 'INNER'
 CROSS                                                             return 'CROSS'
 ON                                                                return 'ON'
 USING                                                             return 'USING'
+LEFT                                                              return 'LEFT'
+RIGHT                                                             return 'RIGHT'
+OUTER                                                             return 'OUTER'
+NATURAL                                                           return 'NATURAL'
 
-','                                                               return ','
-'='                                                               return '='
-'('                                                               return '('
-')'                                                               return ')'
-'~'                                                               return '~'
-'!'                                                               return '!'
-'|'                                                               return '|'
-'&'                                                               return '&'
-'<<'                                                              return '<<'
-'>>'                                                              return '>>'
-'+'                                                               return '+'
-'-'                                                               return '-'
-'*'                                                               return '*'
-'/'                                                               return '/'
-'%'                                                               return '%'
-'^'                                                               return '^'
-'>='                                                              return '>='
-'>'                                                               return '>'
-'<'                                                               return '<'
-'<='                                                              return '<='
-'<>'                                                              return '<>'
-'!='                                                              return '!='
-'<=>'                                                             return '<=>'
-'{'                                                               return '{'
-'}'                                                               return '}'
+","                                                               return ','
+"="                                                               return '='
+"("                                                               return '('
+")"                                                               return ')'
+"~"                                                               return '~'
+"!"                                                               return '!'
+"|"                                                               return '|'
+"&"                                                               return '&'
+"<<"                                                              return '<<'
+">>"                                                              return '>>'
+"+"                                                               return '+'
+"-"                                                               return '-'
+"*"                                                               return '*'
+"/"                                                               return '/'
+"%"                                                               return '%'
+"^"                                                               return '^'
+">="                                                              return '>='
+">"                                                               return '>'
+"<"                                                               return '<'
+"<="                                                              return '<='
+"<>"                                                              return '<>'
+"!="                                                              return '!='
+"<=>"                                                             return '<=>'
+"{"                                                               return '{'
+"}"                                                               return '}'
                                                                  
 ['](\\.|[^'])*[']                                                 return 'STRING'
 ["](\\.|[^"])*["]                                                 return 'STRING'
@@ -113,6 +116,10 @@ USING                                                             return 'USING'
 %left ',' TABLE_REF_COMMA
 %left INDEX_HINT_LIST
 %left INDEX_HINT_COMMA
+%left INNER_CROSS_JOIN_NULL LEFT_RIGHT_JOIN
+%left INNER_CROSS_JOIN
+%right USING
+%right ON
 %left OR XOR '||'
 %left '&&' AND
 %left '|'
@@ -122,7 +129,7 @@ USING                                                             return 'USING'
 %left '>' '>=' '<' '<='
 %left '<<' '>>'
 %left '+' '-'
-%left MULTI DIV MOD '/' '%'
+%left DIV MOD '/' '%' '*'
 %right UPLUS UMINUS UNOT '~' NOT
 %left DOT
 
@@ -304,18 +311,18 @@ simple_expr
   ;
 bit_expr
   : simple_expr { $$ = $1 }
-  | simple_expr '|' bit_expr { $$ = { type: 'BitExpression', operator: '|', left: $1, right: $3 } } 
-  | simple_expr '&' bit_expr { $$ = { type: 'BitExpression', operator: '&', left: $1, right: $3 } }
-  | simple_expr '<<' bit_expr { $$ = { type: 'BitExpression', operator: '<<', left: $1, right: $3 } }
-  | simple_expr '>>' bit_expr { $$ = { type: 'BitExpression', operator: '>>', left: $1, right: $3 } }
-  | simple_expr '+' bit_expr { $$ = { type: 'BitExpression', operator: '+', left: $1, right: $3 } }
-  | simple_expr '-' bit_expr { $$ = { type: 'BitExpression', operator: '-', left: $1, right: $3 } }
-  | simple_expr '*' bit_expr %prec MULTI { $$ = { type: 'BitExpression', operator: '*', left: $1, right: $3 } }
-  | simple_expr '/' bit_expr { $$ = { type: 'BitExpression', operator: '/', left: $1, right: $3 } }
-  | simple_expr DIV bit_expr { $$ = { type: 'BitExpression', operator: 'DIV', left: $1, right: $3 } }
-  | simple_expr MOD bit_expr { $$ = { type: 'BitExpression', operator: 'MOD', left: $1, right: $3 } }
-  | simple_expr '%' bit_expr { $$ = { type: 'BitExpression', operator: '%', left: $1, right: $3 } }
-  | simple_expr '^' bit_expr { $$ = { type: 'BitExpression', operator: '^', left: $1, right: $3 } }
+  | bit_expr '|' bit_expr { $$ = { type: 'BitExpression', operator: '|', left: $1, right: $3 } } 
+  | bit_expr '&' bit_expr { $$ = { type: 'BitExpression', operator: '&', left: $1, right: $3 } }
+  | bit_expr '<<' bit_expr { $$ = { type: 'BitExpression', operator: '<<', left: $1, right: $3 } }
+  | bit_expr '>>' bit_expr { $$ = { type: 'BitExpression', operator: '>>', left: $1, right: $3 } }
+  | bit_expr '+' bit_expr { $$ = { type: 'BitExpression', operator: '+', left: $1, right: $3 } }
+  | bit_expr '-' bit_expr { $$ = { type: 'BitExpression', operator: '-', left: $1, right: $3 } }
+  | bit_expr '*' bit_expr %prec MULTI { $$ = { type: 'BitExpression', operator: '*', left: $1, right: $3 } }
+  | bit_expr '/' bit_expr { $$ = { type: 'BitExpression', operator: '/', left: $1, right: $3 } }
+  | bit_expr DIV bit_expr { $$ = { type: 'BitExpression', operator: 'DIV', left: $1, right: $3 } }
+  | bit_expr MOD bit_expr { $$ = { type: 'BitExpression', operator: 'MOD', left: $1, right: $3 } }
+  | bit_expr '%' bit_expr { $$ = { type: 'BitExpression', operator: '%', left: $1, right: $3 } }
+  | bit_expr '^' bit_expr { $$ = { type: 'BitExpression', operator: '^', left: $1, right: $3 } }
   ;
 not_opt
   : { $$ = false }
@@ -388,15 +395,34 @@ join_inner_cross
   | INNER { $$ = $1 }
   | CROSS { $$ = $1 }
   ;
+left_right
+  : LEFT { $$ = $1 }
+  | RIGHT { $$ = $1 }
+  ;
+out_opt
+  : { $$ = null }
+  | OUTER { $$ = $1 }
+  ;
+left_right_out_opt
+  : { $$ = { leftRight: null, outOpt: null } }
+  | left_right out_opt { $$ = { leftRight: $1, outOpt: $2 } }
+  ;
 join_table
-  : table_reference join_inner_cross JOIN table_factor join_condition_opt { $$ = { type: 'InnerCrossJoinTable', innerCross: $2, left: $1, right: $4, condition: $5 } }
+  : table_reference join_inner_cross JOIN table_factor %prec INNER_CROSS_JOIN_NULL { $$ = { type: 'InnerCrossJoinTable', innerCross: $2, left: $1, right: $4, condition: $5 } }
+  | table_reference join_inner_cross JOIN table_factor join_condition  %prec INNER_CROSS_JOIN { $$ = { type: 'InnerCrossJoinTable', innerCross: $2, left: $1, right: $4, condition: $5 } }
+  | table_reference STRAIGHT_JOIN table_factor on_join_condition { $$ = { type: 'StraightJoinTable', left: $1, right: $3, condition: $4 } }
+  | table_reference left_right out_opt JOIN table_reference join_condition %prec LEFT_RIGHT_JOIN { $$ = { type: 'LeftRightJoinTable', leftRight: $2, outOpt: $3, left: $1, right: $5, condition: $6 } }
+  | table_reference NATURAL left_right_out_opt JOIN table_factor { $$ = { type: 'NaturalJoinTable', leftRight: $3.leftRight, outOpt: $3.outOpt, left: $1, right: $5 } }
   ;
 join_condition_opt
-  : { $$ = null }
+  : %prec SYMBOL_JOIN_CONDITION_NULL { $$ = null }
   | join_condition { $$ = $1 }
   ;
-join_condition
+on_join_condition
   : ON expr { $$ = { type: 'OnJoinCondition', value: $2 } }
+  ;
+join_condition
+  : on_join_condition { $$ = $1 }
   | USING '(' identifier_list ')' { $$ = { type: 'UsingJoinCondition', value: $3 } }
   ;
 table_reference
