@@ -11,6 +11,8 @@
 [#]\s.*\n                                                         /* skip sql comments */
 \s+                                                               /* skip whitespace */
                                                                   
+[\w]+[\u4e00-\u9fa5]+[0-9a-zA-Z_\u4e00-\u9fa5]*                   return 'IDENTIFIER'
+[\u4e00-\u9fa5][0-9a-zA-Z_\u4e00-\u9fa5]*                         return 'IDENTIFIER'
 SELECT                                                            return 'SELECT'
 ALL                                                               return 'ALL'
 ANY                                                               return 'ANY'
@@ -43,6 +45,7 @@ DIV                                                               return 'DIV'
 MOD                                                               return 'MOD'
 NOT                                                               return 'NOT'
 BETWEEN                                                           return 'BETWEEN'
+IN                                                                return 'IN'
 SOUNDS                                                            return 'SOUNDS'
 LIKE                                                              return 'LIKE'
 ESCAPE                                                            return 'ESCAPE'
@@ -71,6 +74,18 @@ LEFT                                                              return 'LEFT'
 RIGHT                                                             return 'RIGHT'
 OUTER                                                             return 'OUTER'
 NATURAL                                                           return 'NATURAL'
+WHERE                                                             return 'WHERE'
+ASC                                                               return 'ASC'
+DESC                                                              return 'DESC'
+WITH                                                              return 'WITH'
+ROLLUP                                                            return 'ROLLUP'
+HAVING                                                            return 'HAVING'
+OFFSET                                                            return 'OFFSET'
+PROCEDURE                                                         return 'PROCEDURE'
+UPDATE                                                            return 'UPDATE'
+LOCK                                                              return 'LOCK'
+SHARE                                                             return 'SHARE'
+MODE                                                              return 'MODE'
 
 ","                                                               return ','
 "="                                                               return '='
@@ -114,6 +129,8 @@ NATURAL                                                           return 'NATURA
 /lex
 
 %left ',' TABLE_REF_COMMA
+%nonassoc NO_PARTITION
+%nonassoc PARTITION
 %left INDEX_HINT_LIST
 %left INDEX_HINT_COMMA
 %left INNER_CROSS_JOIN_NULL LEFT_RIGHT_JOIN
@@ -169,7 +186,15 @@ selectClause
           sqlNoCacheOpt: $10,
           sqlCalcFoundRowsOpt: $11,
           selectExprList: $12,
-          from: $13.from
+          from: $13.from,
+          partition: $13.partition,
+          where: $13.where,
+          groupBy: $13.groupBy,
+          having: $13.having,
+          orderBy: $13.orderBy,
+          limit: $13.limit,
+          procedure: $13.procedure,
+          updateLockMode: $13.updateLockMode
         }
       }
   ;
@@ -334,7 +359,8 @@ escape_opt
   ;
 predicate
   : bit_expr { $$ = $1 }
-  | bit_expr not_opt IN '(' selectClause ')' { $$ = { type: 'InPredicate', hasNot: $2, left: $1 ,right: $5 } }
+  | bit_expr not_opt IN '(' selectClause ')' { $$ = { type: 'InSubQueryPredicate', hasNot: $2, left: $1 ,right: $5 } }
+  | bit_expr not_opt IN '(' expr_list ')' { $$ = { type: 'InExpressionListPredicate', hasNot: $2, left: $1, right: $5 } }
   | bit_expr not_opt BETWEEN bit_expr AND predicate { $$ = { type: 'BetweenPredicate', hasNot: $2, left: $1, right: { left: $3, right: $5 } } }
   | bit_expr SOUNDS LIKE bit_expr { $$ = { type: 'SoundsLikePredicate', hasNot: false, left: $1, right: $4 } }
   | bit_expr not_opt LIKE simple_expr escape_opt { $$ = { type: 'LikePredicate', hasNot: $2, left: $1, right: $4, escape: $5 } }
@@ -378,9 +404,69 @@ expr_list
   | expr_list ',' expr { $$ = $1; $$.value.push($3); }
   ;
 
+where_opt
+  : { $$ = null }
+  | WHERE expr { $$ = $2 }
+  ;
+group_by_opt
+  : { $$ = null }
+  | group_by { $$ = $1 }
+  ;
+roll_up_opt
+  : { $$ = null }
+  | WITH ROLLUP { $$ = true }
+  ;
+group_by
+  : GROUP_BY group_by_order_by_item_list roll_up_opt { $$ = { type: 'GroupBy', value: $2, rollUp: $3 } }
+  ;
+order_by_opt
+  : { $$ = null }
+  | order_by { $$ = $1 }
+  ;
+order_by
+  : ORDER_BY group_by_order_by_item_list roll_up_opt { $$ = { type: 'GroupBy', value: $2, rollUp: $3 } }
+  ;
+group_by_order_by_item_list
+  : group_by_order_by_item { $$ = [ $1 ] }
+  | group_by_order_by_item_list ',' group_by_order_by_item { $$ = $1; $1.push($3); }
+  ;
+group_by_order_by_item
+  : expr sort_opt { $$ = { type: 'GroupByOrderByItem', value: $1, sortOpt: $2 } }
+  ;
+sort_opt
+  : { $$ = null }
+  | ASC { $$ = $1 }
+  | DESC { $$ = $1 }
+  ;
+having_opt
+  : { $$ = null }
+  | HAVING expr { $$ = $2 }
+  ;
+limit
+  : NUMERIC { $$ = { type: 'LIMIT', value: [ $1 ] } }
+  | NUMERIC ',' NUMERIC { $$ = { type: 'LIMIT', value: [ $1, $3 ] } }
+  | NUMERIC OFFSET NUMERIC { $$ = { type: 'LIMIT', value: [ $3, $1 ], offsetMode: true } }
+  ;
+limit_opt
+  : { $$ = null }
+  | limit { $$ = $1 }
+  ;
+procedure_opt
+  : { $$ = null }
+  | procedure { $$ = $1 }
+  ;
+procedure
+  : PROCEDURE function_call { $$ = $2 }
+  ;
+for_update_lock_in_share_mode_opt
+  : { $$ = null }
+  | FOR UPDATE { $$ = $1 + ' ' + $2 }
+  | LOCK IN SHARE MODE { $$ = $1 + ' ' + $2 + ' ' + $3 + ' ' + $4 }
+  ;
 selectDataSetOpt
   : { $$ = {} }
-  | FROM table_refrences { $$ = { from: $2 } }
+  | FROM table_refrences partitionOpt where_opt group_by_opt having_opt order_by_opt limit_opt procedure_opt for_update_lock_in_share_mode_opt
+    { $$ = { from: $2, partition: $3, where: $4, groupBy: $5, having: $6, orderBy: $7, limit: $8, procedure: $9, updateLockMode: $10 } }
   ;
 table_refrences
   : escaped_table_reference { $$ = { type: 'TableRefrences', value: [ $1 ] } }
@@ -415,7 +501,7 @@ join_table
   | table_reference NATURAL left_right_out_opt JOIN table_factor { $$ = { type: 'NaturalJoinTable', leftRight: $3.leftRight, outOpt: $3.outOpt, left: $1, right: $5 } }
   ;
 join_condition_opt
-  : %prec SYMBOL_JOIN_CONDITION_NULL { $$ = null }
+  : { $$ = null }
   | join_condition { $$ = $1 }
   ;
 on_join_condition
@@ -434,7 +520,7 @@ partition_names
   | partition_names ',' identifier { $$ = $1; $1.value.push($3) }
   ;
 partitionOpt
-  : { $$ = null }
+  : %prec NO_PARTITION { $$ = null }
   | PARTITION '(' partition_names ')' { $$ = $3 }
   ;
 aliasOpt

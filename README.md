@@ -1,12 +1,18 @@
 # js-sql-parser
 
-> parse sql in js.
+> parse sql (select grammar) in js.
 
 [![Build Status][travis-image]][travis-url]
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
 
 sql grammar follows https://dev.mysql.com/doc/refman/5.7/en/select.html
+
+
+## TODO
+
+- ${value} like value place holder support.
+- parser.stringify(ast)
 
 ## unsupport currently
 
@@ -15,8 +21,9 @@ sql grammar follows https://dev.mysql.com/doc/refman/5.7/en/select.html
 - parammarker: keyword PREPARE / EXECUTE / DEALLOCATE
 - variable: keyword SET / CREATE PROCEDURE / CREATE FUNCTION
 - identifier expr: ODBC escape syntax
-- matchexpr: Full-Text Search Functions. //to support
-- intervalexpr: Date INTERVAL keyword. //to support
+- matchexpr: Full-Text Search Functions. // to support
+- intervalexpr: Date INTERVAL keyword.   // to support
+- into outfile: INTO OUTFILE keyword.    // to support
 
 ## commonjs usage
 
