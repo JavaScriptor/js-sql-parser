@@ -168,12 +168,11 @@ selectClause
       sqlBigResultOpt
       sqlBufferResultOpt
       sqlCacheOpt
-      sqlNoCacheOpt
       sqlCalcFoundRowsOpt
       selectExprList
       selectDataSetOpt
       {
-        return {
+        $$ = {
           type: 'Select',
           distinctOpt: $2,
           highPriorityOpt: $3,
@@ -183,18 +182,17 @@ selectClause
           sqlBigResultOpt: $7,
           sqlBufferResultOpt: $8,
           sqlCacheOpt: $9,
-          sqlNoCacheOpt: $10,
-          sqlCalcFoundRowsOpt: $11,
-          selectExprList: $12,
-          from: $13.from,
-          partition: $13.partition,
-          where: $13.where,
-          groupBy: $13.groupBy,
-          having: $13.having,
-          orderBy: $13.orderBy,
-          limit: $13.limit,
-          procedure: $13.procedure,
-          updateLockMode: $13.updateLockMode
+          sqlCalcFoundRowsOpt: $10,
+          selectItems: $11,
+          from: $12.from,
+          partition: $12.partition,
+          where: $12.where,
+          groupBy: $12.groupBy,
+          having: $12.having,
+          orderBy: $12.orderBy,
+          limit: $12.limit,
+          procedure: $12.procedure,
+          updateLockMode: $12.updateLockMode
         }
       }
   ;
@@ -206,7 +204,7 @@ distinctOpt
   | { $$ = null }
   ;
 highPriorityOpt
-  : HIGH_PRIORITY { $$ = true }
+  : HIGH_PRIORITY { $$ = $1 }
   | { $$ = null }
   ;
 maxStateMentTimeOpt
@@ -214,36 +212,33 @@ maxStateMentTimeOpt
   | { $$ = null }
   ;
 straightJoinOpt
-  : STRAIGHT_JOIN { $$ = true }
+  : STRAIGHT_JOIN { $$ = $1 }
   | { $$ = null }
   ;
 sqlSmallResultOpt
-  : SQL_SMALL_RESULT { $$ = true }
+  : SQL_SMALL_RESULT { $$ = $1 }
   | { $$ = null }
   ;
 sqlBigResultOpt
-  : SQL_BIG_RESULT { $$ = true }
+  : SQL_BIG_RESULT { $$ = $1 }
   | { $$ = null }
   ;
 sqlBufferResultOpt
-  : SQL_BUFFER_RESULT { $$ = true }
+  : SQL_BUFFER_RESULT { $$ = $1 }
   | { $$ = null }
   ;
 sqlCacheOpt
-  : SQL_CACHE { $$ = true }
-  | { $$ = null }
-  ;
-sqlNoCacheOpt
-  : SQL_NO_CACHE { $$ = true }
-  | { $$ = null }
+  : { $$ = null }
+  | SQL_CACHE { $$ = $1 }
+  | SQL_NO_CACHE { $$ = $1 }
   ;
 sqlCalcFoundRowsOpt
-  : SQL_CALC_FOUND_ROWS { $$ = true }
+  : SQL_CALC_FOUND_ROWS { $$ = $1 }
   | { $$ = null }
   ;
 selectExprList
-  : selectExprList ',' selectExpr { $3.type = 'SelectExpr'; $$.push($3); }
-  | selectExpr { $1.type = 'SelectExpr'; $$ = [ $1 ]; }
+  : selectExprList ',' selectExpr { $1.value.push($3); }
+  | selectExpr { $$ = { type: 'SelectExpr', value: [ $1 ] } }
   ;
 selectExpr
   : '*' { $$ = { value: $1 } }
@@ -393,10 +388,10 @@ expr
   : boolean_primary { $$ = $1 }
   | boolean_primary IS not_opt boolean_extra { $$ = { type: 'IsExpression', hasNot: $3, left: $1, right: $4 } }
   | NOT expr { $$ = { type: 'NotExpression', value: $2 } }
-  | expr '&&' expr { $$ = { type: 'AndOpExpression', left: $1, right: $3 } }
-  | expr '||' expr { $$ = { type: 'OrOpExpression', left: $1, right: $3 } }
-  | expr OR expr { $$ = { type: 'OrExpression', left: $1, right: $3 } }
-  | expr AND expr { $$ = { type: 'AndExpression', left: $1, right: $3 } }
+  | expr '&&' expr { $$ = { type: 'AndExpression', operator: $2, left: $1, right: $3 } }
+  | expr '||' expr { $$ = { type: 'OrExpression', operator: $2, left: $1, right: $3 } }
+  | expr OR expr { $$ = { type: 'OrExpression', operator: $2, left: $1, right: $3 } }
+  | expr AND expr { $$ = { type: 'AndExpression', operator: $2, left: $1, right: $3 } }
   | expr XOR expr { $$ = { type: 'XORExpression', left: $1, right: $3 } }
   ;
 expr_list

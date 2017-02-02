@@ -1,4 +1,3 @@
-
 var root = this
 // AMD / RequireJS
 if (typeof define !== 'undefined' && define.amd) {

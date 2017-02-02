@@ -10,6 +10,9 @@ const testParser = function (sql) {
     console.log(
       JSON.stringify(ast, null, 2)
     );
+    console.log(
+      parser.stringify(ast)
+    );
   }
 
   return ast;
@@ -54,15 +57,17 @@ describe('simple sql support', function () {
 
   it ('test6', function () {
     testParser(`
-      SELECT fm_customer.lname AS 名字1,
-          fm_customer.fname AS 名字2,
-              fm_customer.address1 AS 地址1,fm_customer.phone1 AS 电话1,fm_customer.yearly_income AS 年收入,fm_customer.num_cars_owned AS 拥有车辆数 FROM fm_customer inner join fm_sales_link on fm_customer.customer_id = fm_sales_link.fm_customer.customer_id AND fm_sales_link.store_sales IS NOT NULL\nAND fm_sales_link.store_cost IS NOT NULL\nAND fm_sales_link.unit_sales IS NOT NULL inner join fm_store on fm_sales_link.fm_store.store_id = fm_store.store_id AND fm_store.store_name IS NOT NULL
+      select in中文 from tags
     `);
   });
 
   it ('test7', function () {
     testParser(`
-      select in中文 from tags
+      SELECT distinct high_priority MAX_STATEMENT_TIME=1 STRAIGHT_JOIN SQL_SMALL_RESULT
+      SQL_BIG_RESULT SQL_BUFFER_RESULT SQL_CACHE SQL_CALC_FOUND_ROWS
+      fm_customer.lname AS 名字1,
+          fm_customer.fname AS 名字2,
+              fm_customer.address1 AS 地址1,fm_customer.phone1 AS 电话1,fm_customer.yearly_income AS 年收入,fm_customer.num_cars_owned AS 拥有车辆数 FROM fm_customer inner join fm_sales_link on fm_customer.customer_id = fm_sales_link.fm_customer.customer_id AND fm_sales_link.store_sales IS NOT NULL\nAND fm_sales_link.store_cost IS NOT NULL\nAND fm_sales_link.unit_sales IS NOT NULL inner join fm_store on fm_sales_link.fm_store.store_id = fm_store.store_id AND fm_store.store_name IS NOT NULL
     `);
   });
 });
