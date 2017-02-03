@@ -124,8 +124,8 @@ break;
 case 25:
  this.$ = { type: 'SelectExpr', value: [ $$[$0] ] } 
 break;
-case 26: case 27:
- this.$ = { value: $$[$0] } 
+case 26: case 27: case 52:
+ this.$ = { type: 'Identifier', value: $$[$0] } 
 break;
 case 28:
  this.$ = $$[$0-1]; this.$.alias = $$[$0].alias; this.$.hasAs = $$[$0].hasAs; 
@@ -165,9 +165,6 @@ case 46:
 break;
 case 50:
  this.$ = { type: 'FunctionCallParam', distinctOpt: $$[$0-1], value: $$[$0] } 
-break;
-case 52:
- this.$ = { type: 'Identifier', value: $$[$0] } 
 break;
 case 53:
  this.$ = $$[$0-2]; $$[$0-2].value += '.' + $$[$0] 
@@ -248,7 +245,7 @@ case 97:
  this.$ = { type: 'InExpressionListPredicate', hasNot: $$[$0-4], left: $$[$0-5], right: $$[$0-1] } 
 break;
 case 98:
- this.$ = { type: 'BetweenPredicate', hasNot: $$[$0-4], left: $$[$0-5], right: { left: $$[$0-3], right: $$[$0-1] } } 
+ this.$ = { type: 'BetweenPredicate', hasNot: $$[$0-4], left: $$[$0-5], right: { left: $$[$0-2], right: $$[$0] } } 
 break;
 case 99:
  this.$ = { type: 'SoundsLikePredicate', hasNot: false, left: $$[$0-3], right: $$[$0] } 
@@ -1055,41 +1052,41 @@ case 83:return 55
 break;
 case 84:return 73
 break;
-case 85:return 74
+case 85:return 108
 break;
-case 86:return 82
+case 86:return 74
 break;
-case 87:return 83
+case 87:return 82
 break;
-case 88:return 84
+case 88:return 83
 break;
-case 89:return 85
+case 89:return 84
 break;
-case 90:return 70
+case 90:return 85
 break;
-case 91:return 72
+case 91:return 70
 break;
-case 92:return 34
+case 92:return 72
 break;
-case 93:return 86
+case 93:return 34
 break;
-case 94:return 89
+case 94:return 86
 break;
-case 95:return 90
+case 95:return 89
 break;
-case 96:return 103
+case 96:return 90
 break;
-case 97:return 104
+case 97:return 103
 break;
-case 98:return 106
+case 98:return '<=>'
 break;
 case 99:return 105
 break;
-case 100:return 107
+case 100:return 104
 break;
-case 101:return 108
+case 101:return 106
 break;
-case 102:return '<=>'
+case 102:return 107
 break;
 case 103:return 79
 break;
@@ -1117,7 +1114,7 @@ case 114:return 'INVALID'
 break;
 }
 },
-rules: [/^(?:[\/][*](.|\n)*?[*][\/])/i,/^(?:[-][-]\s.*\n)/i,/^(?:[#]\s.*\n)/i,/^(?:\s+)/i,/^(?:[\w]+[\u4e00-\u9fa5]+[0-9a-zA-Z_\u4e00-\u9fa5]*)/i,/^(?:[\u4e00-\u9fa5][0-9a-zA-Z_\u4e00-\u9fa5]*)/i,/^(?:SELECT\b)/i,/^(?:ALL\b)/i,/^(?:ANY\b)/i,/^(?:DISTINCT\b)/i,/^(?:DISTINCTROW\b)/i,/^(?:HIGH_PRIORITY\b)/i,/^(?:MAX_STATEMENT_TIME\b)/i,/^(?:STRAIGHT_JOIN\b)/i,/^(?:SQL_SMALL_RESULT\b)/i,/^(?:SQL_BIG_RESULT\b)/i,/^(?:SQL_BUFFER_RESULT\b)/i,/^(?:SQL_CACHE\b)/i,/^(?:SQL_NO_CACHE\b)/i,/^(?:SQL_CALC_FOUND_ROWS\b)/i,/^(?:([a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]+\.){1,2}\*)/i,/^(?:AS\b)/i,/^(?:TRUE\b)/i,/^(?:FALSE\b)/i,/^(?:NULL\b)/i,/^(?:COLLATE\b)/i,/^(?:BINARY\b)/i,/^(?:ROW\b)/i,/^(?:EXISTS\b)/i,/^(?:CASE\b)/i,/^(?:WHEN\b)/i,/^(?:THEN\b)/i,/^(?:ELSE\b)/i,/^(?:END\b)/i,/^(?:DIV\b)/i,/^(?:MOD\b)/i,/^(?:NOT\b)/i,/^(?:BETWEEN\b)/i,/^(?:IN\b)/i,/^(?:SOUNDS\b)/i,/^(?:LIKE\b)/i,/^(?:ESCAPE\b)/i,/^(?:REGEXP\b)/i,/^(?:IS\b)/i,/^(?:UNKNOWN\b)/i,/^(?:AND\b)/i,/^(?:OR\b)/i,/^(?:XOR\b)/i,/^(?:FROM\b)/i,/^(?:PARTITION\b)/i,/^(?:USE\b)/i,/^(?:INDEX\b)/i,/^(?:KEY\b)/i,/^(?:FOR\b)/i,/^(?:JOIN\b)/i,/^(?:ORDER\s+BY\b)/i,/^(?:GROUP\s+BY\b)/i,/^(?:IGNORE\b)/i,/^(?:FORCE\b)/i,/^(?:INNER\b)/i,/^(?:CROSS\b)/i,/^(?:ON\b)/i,/^(?:USING\b)/i,/^(?:LEFT\b)/i,/^(?:RIGHT\b)/i,/^(?:OUTER\b)/i,/^(?:NATURAL\b)/i,/^(?:WHERE\b)/i,/^(?:ASC\b)/i,/^(?:DESC\b)/i,/^(?:WITH\b)/i,/^(?:ROLLUP\b)/i,/^(?:HAVING\b)/i,/^(?:OFFSET\b)/i,/^(?:PROCEDURE\b)/i,/^(?:UPDATE\b)/i,/^(?:LOCK\b)/i,/^(?:SHARE\b)/i,/^(?:MODE\b)/i,/^(?:OJ\b)/i,/^(?:,)/i,/^(?:=)/i,/^(?:\()/i,/^(?:\))/i,/^(?:~)/i,/^(?:!)/i,/^(?:\|)/i,/^(?:&)/i,/^(?:<<)/i,/^(?:>>)/i,/^(?:\+)/i,/^(?:-)/i,/^(?:\*)/i,/^(?:\/)/i,/^(?:%)/i,/^(?:\^)/i,/^(?:>=)/i,/^(?:>)/i,/^(?:<)/i,/^(?:<=)/i,/^(?:<>)/i,/^(?:!=)/i,/^(?:<=>)/i,/^(?:\{)/i,/^(?:\})/i,/^(?:['](\\.|[^'])*['])/i,/^(?:["](\\.|[^"])*["])/i,/^(?:[0][x][0-9a-fA-F]+)/i,/^(?:[-]?[0-9]+(\.[0-9]+)?)/i,/^(?:[-]?[0-9]+(\.[0-9]+)?[eE][-][0-9]+(\.[0-9]+)?)/i,/^(?:[a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*)/i,/^(?:\.)/i,/^(?:['"][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*["'])/i,/^(?:$)/i,/^(?:.)/i],
+rules: [/^(?:[\/][*](.|\n)*?[*][\/])/i,/^(?:[-][-]\s.*\n)/i,/^(?:[#]\s.*\n)/i,/^(?:\s+)/i,/^(?:[\w]+[\u4e00-\u9fa5]+[0-9a-zA-Z_\u4e00-\u9fa5]*)/i,/^(?:[\u4e00-\u9fa5][0-9a-zA-Z_\u4e00-\u9fa5]*)/i,/^(?:SELECT\b)/i,/^(?:ALL\b)/i,/^(?:ANY\b)/i,/^(?:DISTINCT\b)/i,/^(?:DISTINCTROW\b)/i,/^(?:HIGH_PRIORITY\b)/i,/^(?:MAX_STATEMENT_TIME\b)/i,/^(?:STRAIGHT_JOIN\b)/i,/^(?:SQL_SMALL_RESULT\b)/i,/^(?:SQL_BIG_RESULT\b)/i,/^(?:SQL_BUFFER_RESULT\b)/i,/^(?:SQL_CACHE\b)/i,/^(?:SQL_NO_CACHE\b)/i,/^(?:SQL_CALC_FOUND_ROWS\b)/i,/^(?:([a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]+\.){1,2}\*)/i,/^(?:AS\b)/i,/^(?:TRUE\b)/i,/^(?:FALSE\b)/i,/^(?:NULL\b)/i,/^(?:COLLATE\b)/i,/^(?:BINARY\b)/i,/^(?:ROW\b)/i,/^(?:EXISTS\b)/i,/^(?:CASE\b)/i,/^(?:WHEN\b)/i,/^(?:THEN\b)/i,/^(?:ELSE\b)/i,/^(?:END\b)/i,/^(?:DIV\b)/i,/^(?:MOD\b)/i,/^(?:NOT\b)/i,/^(?:BETWEEN\b)/i,/^(?:IN\b)/i,/^(?:SOUNDS\b)/i,/^(?:LIKE\b)/i,/^(?:ESCAPE\b)/i,/^(?:REGEXP\b)/i,/^(?:IS\b)/i,/^(?:UNKNOWN\b)/i,/^(?:AND\b)/i,/^(?:OR\b)/i,/^(?:XOR\b)/i,/^(?:FROM\b)/i,/^(?:PARTITION\b)/i,/^(?:USE\b)/i,/^(?:INDEX\b)/i,/^(?:KEY\b)/i,/^(?:FOR\b)/i,/^(?:JOIN\b)/i,/^(?:ORDER\s+BY\b)/i,/^(?:GROUP\s+BY\b)/i,/^(?:IGNORE\b)/i,/^(?:FORCE\b)/i,/^(?:INNER\b)/i,/^(?:CROSS\b)/i,/^(?:ON\b)/i,/^(?:USING\b)/i,/^(?:LEFT\b)/i,/^(?:RIGHT\b)/i,/^(?:OUTER\b)/i,/^(?:NATURAL\b)/i,/^(?:WHERE\b)/i,/^(?:ASC\b)/i,/^(?:DESC\b)/i,/^(?:WITH\b)/i,/^(?:ROLLUP\b)/i,/^(?:HAVING\b)/i,/^(?:OFFSET\b)/i,/^(?:PROCEDURE\b)/i,/^(?:UPDATE\b)/i,/^(?:LOCK\b)/i,/^(?:SHARE\b)/i,/^(?:MODE\b)/i,/^(?:OJ\b)/i,/^(?:,)/i,/^(?:=)/i,/^(?:\()/i,/^(?:\))/i,/^(?:~)/i,/^(?:!=)/i,/^(?:!)/i,/^(?:\|)/i,/^(?:&)/i,/^(?:<<)/i,/^(?:>>)/i,/^(?:\+)/i,/^(?:-)/i,/^(?:\*)/i,/^(?:\/)/i,/^(?:%)/i,/^(?:\^)/i,/^(?:>=)/i,/^(?:<=>)/i,/^(?:<=)/i,/^(?:>)/i,/^(?:<)/i,/^(?:<>)/i,/^(?:\{)/i,/^(?:\})/i,/^(?:['](\\.|[^'])*['])/i,/^(?:["](\\.|[^"])*["])/i,/^(?:[0][x][0-9a-fA-F]+)/i,/^(?:[-]?[0-9]+(\.[0-9]+)?)/i,/^(?:[-]?[0-9]+(\.[0-9]+)?[eE][-][0-9]+(\.[0-9]+)?)/i,/^(?:[a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*)/i,/^(?:\.)/i,/^(?:['"][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*["'])/i,/^(?:$)/i,/^(?:.)/i],
 conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114],"inclusive":true}}
 });
 return lexer;
@@ -1146,21 +1143,42 @@ Sql.prototype.travel = function (ast) {
   if (!ast) return;
 
   if (typeof ast === 'string') {
-    this.append(ast);
+    return this.append(ast);
   }
 
   var processor = this['travel' + ast.type];
   processor.call(this, ast);
 }
 
-Sql.prototype.appendKeyword = function(keyword) {
-  this.buffer += ' ' + keyword.toUpperCase();
+var noSuffixFlag = false;
+Sql.prototype.appendKeyword = function(keyword, noPrefix, noSuffix) {
+  if (noSuffixFlag) {
+    noPrefix = true;
+    noSuffixFlag = false;
+  }
+  if (noPrefix) {
+    this.buffer += keyword.toUpperCase();
+  } else {
+    this.buffer += ' ' + keyword.toUpperCase();
+  }
+
+  if (noSuffix) {
+    noSuffixFlag = true;
+  }
 }
-Sql.prototype.append = function(word, noPrefix) {
+Sql.prototype.append = function(word, noPrefix, noSuffix) {
+  if (noSuffixFlag) {
+    noPrefix = true;
+    noSuffixFlag = false;
+  }
   if (noPrefix) {
     this.buffer += word;
   } else {
     this.buffer += ' ' + word;
+  }
+
+  if (noSuffix) {
+    noSuffixFlag = true;
   }
 }
 Sql.prototype.travelMain = function(ast) {
@@ -1240,7 +1258,7 @@ Sql.prototype.travelSelectExpr = function (ast) {
         if (ast.hasAs) {
           this.appendKeyword('as');
         }
-        this.append(ast.alias);
+        this.travel(ast.alias);
       }
     }
     if (i !== exprList.length - 1) {
@@ -1280,7 +1298,7 @@ Sql.prototype.travelString = function (ast) {
 }
 Sql.prototype.travelFunctionCall = function (ast) {
   this.append(ast.name);
-  this.append('(', true);
+  this.append('(', true, true);
   var params = ast.params;
   for (var i = 0; i < params.length; i++) {
     var param = params[i];
@@ -1338,7 +1356,7 @@ Sql.prototype.travelSimpleExprParentheses = function (ast) {
   if (ast.hasRow) {
     this.appendKeyword('row');
   }
-  this.append('(');
+  this.append('(', false, true);
   this.travel(ast.value);
   this.append(')', true);
 }
@@ -1346,14 +1364,14 @@ Sql.prototype.travelSubQuery = function (ast) {
   if (ast.hasExists) {
     this.appendKeyword('exists');
   }
-  this.append('(');
+  this.append('(', false, true);
   this.travel(ast.value);
   this.append(')', true);
   if (ast.alias) {
     if (ast.hasAs) {
       this.appendKeyword('as');
     }
-    this.append(ast.alias);
+    this.travel(ast.alias);
   }
 }
 Sql.prototype.travelIdentifierExpr = function (ast) {
@@ -1373,7 +1391,7 @@ Sql.prototype.travelInSubQueryPredicate = function (ast) {
     this.appendKeyword('not');
   }
   this.appendKeyword('in');
-  this.append('(');
+  this.append('(', false, true);
   this.travel(ast.right);
   this.append(')');
 }
@@ -1383,7 +1401,7 @@ Sql.prototype.travelInExpressionListPredicate = function (ast) {
     this.appendKeyword('not');
   }
   this.appendKeyword('in');
-  this.append('(');
+  this.append('(', false, true);
   this.travel(ast.right);
   this.append(')');
 }
@@ -1440,7 +1458,7 @@ Sql.prototype.travelComparisonSubQueryBooleanPrimary = function (ast) {
   this.travel(ast.left);
   this.append(ast.operator);
   this.appendKeyword(ast.subQueryOpt);
-  this.append('(');
+  this.append('(', false, true);
   this.travel(ast.right);
   this.append(')');
 }
@@ -1502,7 +1520,7 @@ Sql.prototype.travelLimit = function (ast) {
 Sql.prototype.travelTableRefrences = function (ast) {
   var list = ast.value;
   if (ast.TableRefrences) {
-    this.append('(');
+    this.append('(', false, true);
   }
   for (var i = 0; i < list.length; i++) {
     this.travel(list[i]);
@@ -1569,13 +1587,13 @@ Sql.prototype.travelOnJoinCondition = function (ast) {
 }
 Sql.prototype.travelUsingJoinCondition = function (ast) {
   this.appendKeyword('using');
-  this.appendKeyword('(');
+  this.appendKeyword('(', false, true);
   this.travel(ast.value);
   this.appendKeyword(')');
 }
 Sql.prototype.travelPartitions = function (ast) {
   this.appendKeyword('partition');
-  this.appendKeyword('(');
+  this.appendKeyword('(', false, true);
   var list = ast.value;
   for (var i = 0; i < list.length; i++) {
     this.travel(list[i]);
@@ -1604,7 +1622,7 @@ Sql.prototype.travelUseIndexHint = function (ast) {
   if (ast.forOpt) {
     this.travel(ast.forOpt);
   }
-  this.appendKeyword('(');
+  this.appendKeyword('(', false, true);
   if (ast.value) {
     this.travel(ast.value);
   }
@@ -1616,7 +1634,7 @@ Sql.prototype.travelIgnoreIndexHint = function (ast) {
   if (ast.forOpt) {
     this.travel(ast.forOpt);
   }
-  this.appendKeyword('(');
+  this.appendKeyword('(', false, true);
   if (ast.value) {
     this.travel(ast.value);
   }
@@ -1628,7 +1646,7 @@ Sql.prototype.travelForceIndexHint = function (ast) {
   if (ast.forOpt) {
     this.travel(ast.forOpt);
   }
-  this.appendKeyword('(');
+  this.appendKeyword('(', false, true);
   if (ast.value) {
     this.travel(ast.value);
   }
@@ -1643,7 +1661,7 @@ Sql.prototype.travelTableFactor = function (ast) {
     if (ast.hasAs) {
       this.appendKeyword('as');
     }
-    this.append(ast.alias);
+    this.travel(ast.alias);
   }
   if (ast.indexHintOpt) {
     this.travel(ast.indexHintOpt);

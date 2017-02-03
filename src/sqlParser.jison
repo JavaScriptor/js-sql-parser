@@ -93,6 +93,7 @@ OJ                                                                return 'OJ'
 "("                                                               return '('
 ")"                                                               return ')'
 "~"                                                               return '~'
+"!="                                                              return '!='
 "!"                                                               return '!'
 "|"                                                               return '|'
 "&"                                                               return '&'
@@ -105,12 +106,11 @@ OJ                                                                return 'OJ'
 "%"                                                               return '%'
 "^"                                                               return '^'
 ">="                                                              return '>='
+"<=>"                                                             return '<=>'
+"<="                                                              return '<='
 ">"                                                               return '>'
 "<"                                                               return '<'
-"<="                                                              return '<='
 "<>"                                                              return '<>'
-"!="                                                              return '!='
-"<=>"                                                             return '<=>'
 "{"                                                               return '{'
 "}"                                                               return '}'
                                                                  
@@ -242,8 +242,8 @@ selectExprList
   | selectExpr { $$ = { type: 'SelectExpr', value: [ $1 ] } }
   ;
 selectExpr
-  : '*' { $$ = { value: $1 } }
-  | SELECT_EXPR_STAR { $$ = { value: $1 } }
+  : '*' { $$ = { type: 'Identifier', value: $1 } }
+  | SELECT_EXPR_STAR { $$ = { type: 'Identifier', value: $1 } }
   | expr selectExprAliasOpt { $$ = $1; $$.alias = $2.alias; $$.hasAs = $2.hasAs; }
   ;
 selectExprAliasOpt
@@ -357,7 +357,7 @@ predicate
   : bit_expr { $$ = $1 }
   | bit_expr not_opt IN '(' selectClause ')' { $$ = { type: 'InSubQueryPredicate', hasNot: $2, left: $1 ,right: $5 } }
   | bit_expr not_opt IN '(' expr_list ')' { $$ = { type: 'InExpressionListPredicate', hasNot: $2, left: $1, right: $5 } }
-  | bit_expr not_opt BETWEEN bit_expr AND predicate { $$ = { type: 'BetweenPredicate', hasNot: $2, left: $1, right: { left: $3, right: $5 } } }
+  | bit_expr not_opt BETWEEN bit_expr AND predicate { $$ = { type: 'BetweenPredicate', hasNot: $2, left: $1, right: { left: $4, right: $6 } } }
   | bit_expr SOUNDS LIKE bit_expr { $$ = { type: 'SoundsLikePredicate', hasNot: false, left: $1, right: $4 } }
   | bit_expr not_opt LIKE simple_expr escape_opt { $$ = { type: 'LikePredicate', hasNot: $2, left: $1, right: $4, escape: $5 } }
   | bit_expr not_opt REGEXP bit_expr { $$ = { type: 'RegexpPredicate', hasNot: $2, left: $1, right: $4 } }
