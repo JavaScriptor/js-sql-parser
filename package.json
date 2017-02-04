@@ -1,6 +1,6 @@
 {
   "name": "js-sql-parser",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0",
   "description": "",
   "main": "./dist/parser/sqlParser.js",
   "scripts": {
