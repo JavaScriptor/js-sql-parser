@@ -12,7 +12,7 @@ sql grammar follows https://dev.mysql.com/doc/refman/5.7/en/select.html
 ## TODO
 
 - ${value} like value place holder support.
-- parser.stringify(ast)
+- benchmark
 
 ## unsupport currently
 
