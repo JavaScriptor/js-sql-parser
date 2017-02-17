@@ -1,7 +1,7 @@
 'use strict';
 
-const debug = true;
-const parser = require('../dist/parser/sqlParser');
+const debug = false;
+const parser = require('../');
 
 const testParser = function (sql) {
   let ast = parser.parse(sql);
@@ -23,6 +23,10 @@ const testParser = function (sql) {
 
 
 describe('simple sql support', function () {
+  it('test0', function () {
+    testParser('select a from b where c > 1 group by d order by e desc');
+  });
+
   it('test1', function () {
     testParser('select distinct max_statement_time = 1.2 a ');
   });
