@@ -24,7 +24,7 @@ const testParser = function (sql) {
 
 describe('simple sql support', function () {
   it('test0', function () {
-    testParser('select a from b where c > 1 group by d order by e desc');
+    testParser('select a from b where c > 1 group by d order by e desc;');
   });
 
   it('test1', function () {

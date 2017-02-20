@@ -113,6 +113,7 @@ OJ                                                                return 'OJ'
 "<>"                                                              return '<>'
 "{"                                                               return '{'
 "}"                                                               return '}'
+";"                                                               return ';'
                                                                  
 ['](\\.|[^'])*[']                                                 return 'STRING'
 ["](\\.|[^"])*["]                                                 return 'STRING'
@@ -157,6 +158,7 @@ OJ                                                                return 'OJ'
 
 main
   : selectClause EOF { return {nodeType: 'Main', value: $1}; }
+  | selectClause ';' EOF { return {nodeType: 'Main', value: $1}; }
   ;
 
 selectClause
