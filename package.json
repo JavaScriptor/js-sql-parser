@@ -4,7 +4,7 @@
   "description": "",
   "main": "./dist/parser/sqlParser.js",
   "scripts": {
-    "test": "mocha test/main.test.js --require babel-register",
+    "test": "make test",
     "benchmark": "node test/benchmark.js"
   },
   "repository": {
