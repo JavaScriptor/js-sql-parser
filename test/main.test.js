@@ -4,21 +4,27 @@ const debug = false;
 const parser = require('../');
 
 const testParser = function (sql) {
-  let ast = parser.parse(sql);
+  let firstAst = parser.parse(sql);
+  let firstSql = parser.stringify(firstAst);
+  let secondAst = parser.parse(firstSql);
+  let secondSql = parser.stringify(secondAst);
+
+  if (firstSql !== secondSql) {
+    console.log('firstSql', firstSql);
+    console.log('secondSql', secondSql);
+    throw 'err firstSql don\'t equals secondSql. ';
+  }
 
   if (debug) {
     console.log(
-      JSON.stringify(ast, null, 2)
+      JSON.stringify(secondAst, null, 2)
     );
     console.log(
-      parser.stringify(ast)
-    );
-    console.log(
-      parser.stringify(parser.parse(parser.stringify(ast)))
+      parser.stringify(secondAst)
     );
   }
 
-  return ast;
+  return secondAst;
 }
 
 
