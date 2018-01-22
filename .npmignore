@@ -3,3 +3,6 @@ Makefile
 node_modules
 src
 test
+.babelrc
+.idea
+.travis.yml
