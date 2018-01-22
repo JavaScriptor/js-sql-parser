@@ -88,6 +88,7 @@ LOCK                                                              return 'LOCK'
 SHARE                                                             return 'SHARE'
 MODE                                                              return 'MODE'
 OJ                                                                return 'OJ'
+LIMIT                                                             return 'LIMIT'
 
 ","                                                               return ','
 "="                                                               return '='
@@ -442,9 +443,9 @@ having_opt
   | HAVING expr { $$ = $2 }
   ;
 limit
-  : NUMERIC { $$ = { type: 'Limit', value: [ $1 ] } }
-  | NUMERIC ',' NUMERIC { $$ = { type: 'Limit', value: [ $1, $3 ] } }
-  | NUMERIC OFFSET NUMERIC { $$ = { type: 'Limit', value: [ $3, $1 ], offsetMode: true } }
+  : LIMIT NUMERIC { $$ = { type: 'Limit', value: [ $2 ] } }
+  | LIMIT NUMERIC ',' NUMERIC { $$ = { type: 'Limit', value: [ $2, $4 ] } }
+  | LIMIT NUMERIC OFFSET NUMERIC { $$ = { type: 'Limit', value: [ $4, $2 ], offsetMode: true } }
   ;
 limit_opt
   : { $$ = null }

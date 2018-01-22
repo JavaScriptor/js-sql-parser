@@ -130,5 +130,9 @@ AND (rd.rd_numberofrooms <= (select sum(rn.reservation_numberofrooms) as count_r
   it ('test11 SELECT `LEFT`(a, 3) FROM b support.', function () {
     testParser('SELECT `LEFT`(a, 3) FROM b');
   });
+
+  it ('limit support.', function () {
+    testParser('select a from b limit 2, 3');
+  });
 });
 

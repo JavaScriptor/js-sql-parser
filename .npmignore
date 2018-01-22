@@ -1,0 +1,5 @@
+Makefile
+*.log
+node_modules
+src
+test
