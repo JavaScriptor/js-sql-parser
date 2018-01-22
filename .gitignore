@@ -2,3 +2,5 @@
 node_modules
 *.log
 *.swp
+dist/parser/sqlParser.js
+
