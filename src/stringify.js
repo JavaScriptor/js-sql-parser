@@ -56,6 +56,9 @@ Sql.prototype.append = function(word, noPrefix, noSuffix) {
 }
 Sql.prototype.travelMain = function(ast) {
   this.travelSelect(ast.value);
+  if (ast.hasSemicolon) {
+    this.append(';', true);
+  }
 }
 Sql.prototype.travelSelect = function(ast) {
   this.appendKeyword('select', true);
