@@ -134,5 +134,9 @@ AND (rd.rd_numberofrooms <= (select sum(rn.reservation_numberofrooms) as count_r
   it ('limit support.', function () {
     testParser('select a from b limit 2, 3');
   });
+
+  it ('fix not equal.', function () {
+    testParser('select a from b where a <> 1 limit 2, 3');
+  });
 });
 
