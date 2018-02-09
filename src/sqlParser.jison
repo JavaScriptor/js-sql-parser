@@ -160,7 +160,7 @@ LIMIT                                                             return 'LIMIT'
 
 main
   : selectClause EOF { return {nodeType: 'Main', value: $1}; }
-  | selectClause ';' EOF { return {nodeType: 'Main', value: $1}; }
+  | selectClause ';' EOF { return {nodeType: 'Main', value: $1, hasSemicolon: true}; }
   ;
 
 selectClause

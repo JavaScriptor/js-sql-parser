@@ -1,6 +1,6 @@
 # js-sql-parser
 
-> parse sql (select grammar) in js.
+> parse / stringify sql (select grammar) in js.
 
 [![Build Status][travis-image]][travis-url]
 [![NPM Version][npm-image]][npm-url]
@@ -29,11 +29,17 @@ sql grammar follows https://dev.mysql.com/doc/refman/5.7/en/select.html
 
 `npm install --save js-sql-parser`
 
-```
+```js
 const parser = require('js-sql-parser');
 const ast = parser.parse('select * from dual');
 
 console.log(JSON.stringify(ast, null, 2));
+
+ast.value.selectItems.value[0].value = 'foo';
+ast.value.from.value[0].value.value.value = 'bar';
+
+console.log(parser.stringify(ast));
+// SELECT foo FROM bar
 ```
 
 ## script tag
@@ -42,7 +48,8 @@ console.log(JSON.stringify(ast, null, 2));
 <script src="./dist/parser/sqlParser.js"><script/>
 
 var sqlParser = window.sqlParser;
-sqlParser.parse('select * from dual');
+var ast = sqlParser.parse('select * from dual');
+var sql = sqlParser.stringify(ast);
 ```
 
 ## AMD support

@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = false;
+const debug = require('debug')('js-sql-parser');
 const parser = require('../');
 
 const testParser = function (sql) {
@@ -15,14 +15,8 @@ const testParser = function (sql) {
     throw 'err firstSql don\'t equals secondSql. ';
   }
 
-  if (debug) {
-    console.log(
-      JSON.stringify(secondAst, null, 2)
-    );
-    console.log(
-      parser.stringify(secondAst)
-    );
-  }
+  debug(JSON.stringify(secondAst, null, 2));
+  debug(parser.stringify(secondAst));
 
   return secondAst;
 }
@@ -137,6 +131,10 @@ AND (rd.rd_numberofrooms <= (select sum(rn.reservation_numberofrooms) as count_r
 
   it ('fix not equal.', function () {
     testParser('select a from b where a <> 1 limit 2, 3');
+  });
+
+  it ('restore semicolon.', function () {
+    testParser('select a from b limit 2;');
   });
 });
 
