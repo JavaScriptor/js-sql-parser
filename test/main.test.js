@@ -136,5 +136,16 @@ AND (rd.rd_numberofrooms <= (select sum(rn.reservation_numberofrooms) as count_r
   it ('restore semicolon.', function () {
     testParser('select a from b limit 2;');
   });
-});
 
+  it('update0', function () {
+    testParser('update A SET b=2 WHERE c=3;');
+  });
+
+  it('update1', function () {
+    testParser('update LOW_PRIORITY ignore A SET b=2, c=d WHERE e=4 ORDER BY d DESC limit 1;');
+  });
+
+  it('update2', function () {
+    testParser('update LOW_PRIORITY ignore A, B, C SET b=2, `C`.c=d WHERE e=4 ORDER BY d DESC limit 1;');
+  });
+});

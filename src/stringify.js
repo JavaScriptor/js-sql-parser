@@ -55,7 +55,13 @@ Sql.prototype.append = function(word, noPrefix, noSuffix) {
   }
 }
 Sql.prototype.travelMain = function(ast) {
-  this.travelSelect(ast.value);
+  if (ast.value.type === 'Select') {
+    this.travelSelect(ast.value);
+  } else if (ast.value.type === 'Update') {
+    this.travelUpdate(ast.value);
+  } else {
+    throw new Error('Unknown query value type');
+  }
   if (ast.hasSemicolon) {
     this.append(';', true);
   }
@@ -123,6 +129,40 @@ Sql.prototype.travelSelect = function(ast) {
     this.appendKeyword(ast.updateLockMode);
   }
 }
+Sql.prototype.travelUpdate = function(ast) {
+  this.appendKeyword('update', true);
+  if (ast.lowPriority) {
+    this.appendKeyword('low_priority');
+  }
+  if (ast.ignore) {
+    this.appendKeyword('ignore');
+  }
+  this.travelTableRefrences(ast.tables);
+  this.appendKeyword('set');
+  this.travelAssignments(ast.assignments);
+  if (ast.where) {
+    this.appendKeyword('where');
+    this.travel(ast.where);
+  }
+  if (ast.orderBy) {
+    this.travel(ast.orderBy);
+  }
+  if (ast.limit) {
+    this.travel(ast.limit);
+  }
+}
+Sql.prototype.travelAssignments = function(ast) {
+  for (var i = 0; i < ast.value.length; i++) {
+    var x = ast.value[i];
+    this.travelIdentifier(x.left);
+    this.travel('=');
+    this.travelIdentifier(x.right);
+
+    if (i !== ast.value.length - 1) {
+      this.append(',', true);
+    }
+  }
+}
 Sql.prototype.travelSelectExpr = function (ast) {
   var exprList = ast.value;
   for (var i = 0; i < exprList.length; i++) {
@@ -161,8 +201,8 @@ Sql.prototype.travelXORExpression = function (ast) {
   this.appendKeyword(ast.operator);
   this.travel(ast.right);
 }
-Sql.prototype.travelNull = 
-Sql.prototype.travelBoolean = 
+Sql.prototype.travelNull =
+Sql.prototype.travelBoolean =
 Sql.prototype.travelBooleanExtra = function (ast) {
   this.appendKeyword(ast.value);
 }

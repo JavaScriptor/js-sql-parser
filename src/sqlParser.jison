@@ -10,7 +10,7 @@
 [-][-]\s.*\n                                                      /* skip sql comments */
 [#]\s.*\n                                                         /* skip sql comments */
 \s+                                                               /* skip whitespace */
-                                                                  
+
 [`][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*[`]            return 'IDENTIFIER'
 [\w]+[\u4e00-\u9fa5]+[0-9a-zA-Z_\u4e00-\u9fa5]*                   return 'IDENTIFIER'
 [\u4e00-\u9fa5][0-9a-zA-Z_\u4e00-\u9fa5]*                         return 'IDENTIFIER'
@@ -66,6 +66,7 @@ JOIN                                                              return 'JOIN'
 ORDER\s+BY                                                        return 'ORDER_BY'
 GROUP\s+BY                                                        return 'GROUP_BY'
 IGNORE                                                            return 'IGNORE'
+LOW_PRIORITY                                                      return 'LOW_PRIORITY'
 FORCE                                                             return 'FORCE'
 INNER                                                             return 'INNER'
 CROSS                                                             return 'CROSS'
@@ -82,6 +83,7 @@ WITH                                                              return 'WITH'
 ROLLUP                                                            return 'ROLLUP'
 HAVING                                                            return 'HAVING'
 OFFSET                                                            return 'OFFSET'
+SET                                                               return 'SET'
 PROCEDURE                                                         return 'PROCEDURE'
 UPDATE                                                            return 'UPDATE'
 LOCK                                                              return 'LOCK'
@@ -116,7 +118,7 @@ LIMIT                                                             return 'LIMIT'
 "{"                                                               return '{'
 "}"                                                               return '}'
 ";"                                                               return ';'
-                                                                 
+
 ['](\\.|[^'])*[']                                                 return 'STRING'
 ["](\\.|[^"])*["]                                                 return 'STRING'
 [0][x][0-9a-fA-F]+                                                return 'HEX_NUMERIC'
@@ -126,7 +128,7 @@ LIMIT                                                             return 'LIMIT'
 [a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*                  return 'IDENTIFIER'
 \.                                                                return 'DOT'
 ['"][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*["']          return 'QUOTED_IDENTIFIER'
-                                                                 
+
 <<EOF>>                                                           return 'EOF'
 .                                                                 return 'INVALID'
 
@@ -159,12 +161,58 @@ LIMIT                                                             return 'LIMIT'
 %% /* language grammar */
 
 main
-  : selectClause EOF { return {nodeType: 'Main', value: $1}; }
-  | selectClause ';' EOF { return {nodeType: 'Main', value: $1, hasSemicolon: true}; }
+  : query EOF { return {nodeType: 'Main', value: $1}; }
+  | query ';' EOF { return {nodeType: 'Main', value: $1, hasSemicolon: true}; }
+  ;
+
+query
+  : selectClause
+  | updateClause
+  ;
+
+updateClause
+  : UPDATE low_priority_opt ignore_opt
+      table_refrences
+    SET
+      assignmentList
+    where_opt
+    order_by_opt
+    limit_opt
+    {
+      $$ = {
+        type: 'Update',
+        lowPriority: $2,
+        ignore: $3,
+        tables: $4,
+        assignments: $6,
+        where: $7,
+        orderBy: $8,
+        limit: $9
+      }
+    }
+  ;
+
+low_priority_opt
+  : { $$ = null }
+  | LOW_PRIORITY { $$ = $1 }
+  ;
+
+ignore_opt
+  : { $$ = null }
+  | IGNORE { $$ = $1 }
+  ;
+
+assignment
+  : identifier '=' expr { $$ = { type: 'Assignment', left: $1, right: $3 } }
+  ;
+
+assignmentList
+  : assignmentList ',' assignment { $1.value.push($3); }
+  | assignment { $$ = { type: 'AssignmentList', value: [ $1 ] } }
   ;
 
 selectClause
-  : SELECT 
+  : SELECT
       distinctOpt
       highPriorityOpt
       maxStateMentTimeOpt
@@ -203,7 +251,7 @@ selectClause
   ;
 
 distinctOpt
-  : ALL { $$ = $1 } 
+  : ALL { $$ = $1 }
   | DISTINCT { $$ = $1 }
   | DISTINCTROW { $$ = $1 }
   | { $$ = null }
@@ -336,7 +384,7 @@ simple_expr
   ;
 bit_expr
   : simple_expr { $$ = $1 }
-  | bit_expr '|' bit_expr { $$ = { type: 'BitExpression', operator: '|', left: $1, right: $3 } } 
+  | bit_expr '|' bit_expr { $$ = { type: 'BitExpression', operator: '|', left: $1, right: $3 } }
   | bit_expr '&' bit_expr { $$ = { type: 'BitExpression', operator: '&', left: $1, right: $3 } }
   | bit_expr '<<' bit_expr { $$ = { type: 'BitExpression', operator: '<<', left: $1, right: $3 } }
   | bit_expr '>>' bit_expr { $$ = { type: 'BitExpression', operator: '>>', left: $1, right: $3 } }
