@@ -59,6 +59,8 @@ Sql.prototype.travelMain = function(ast) {
     this.travelSelect(ast.value);
   } else if (ast.value.type === 'Update') {
     this.travelUpdate(ast.value);
+  } else if (ast.value.type === 'Insert') {
+    this.travelInsert(ast.value);
   } else {
     throw new Error('Unknown query value type');
   }
@@ -129,6 +131,64 @@ Sql.prototype.travelSelect = function(ast) {
     this.appendKeyword(ast.updateLockMode);
   }
 }
+Sql.prototype.travelInsert = function(ast) {
+  this.appendKeyword('insert', true);
+
+  if (ast.lowPriority) {
+    this.appendKeyword('low_priority');
+  }
+  if (ast.ignore) {
+    this.appendKeyword('ignore');
+  }
+  if (ast.into) {
+    this.appendKeyword('into');
+  }
+  this.travelTableRefrence(ast.table);
+  if (ast.partitions) {
+    this.travelPartitions(ast.partitions);
+  }
+  if (ast.cols) {
+    this.travel('(');
+    this.travelIdentifierList(ast.cols);
+    this.travel(')');
+  }
+  this.travel(ast.value);
+  if (ast.src.type === 'Select') {
+    this.travelSelect(ast.src);
+  } else if (ast.src.type === 'Values') {
+    this.travel(ast.src.keyword);
+    this.travelInsertRows(ast.src.values);
+  }
+  if (ast.duplicateAssignments) {
+    this.appendKeyword('ON');
+    this.appendKeyword('DUPLICATE');
+    this.appendKeyword('KEY');
+    this.appendKeyword('UPDATE');
+    this.travelAssignments(ast.duplicateAssignments);
+  }
+}
+Sql.prototype.travelInsertRows = function(ast) {
+  for (var i = 0; i < ast.value.length; i++) {
+    var x = ast.value[i];
+    this.travel('(');
+    this.travelValueList(x.value);
+    this.travel(')');
+
+    if (i !== ast.value.length - 1) {
+      this.append(',', true);
+    }
+  }
+}
+Sql.prototype.travelValueList = function(ast) {
+  for (var i = 0; i < ast.length; i++) {
+    var x = ast[i];
+    this.travel(x);
+
+    if (i !== ast.length - 1) {
+      this.append(',', true);
+    }
+  }
+}
 Sql.prototype.travelUpdate = function(ast) {
   this.appendKeyword('update', true);
   if (ast.lowPriority) {
@@ -154,9 +214,9 @@ Sql.prototype.travelUpdate = function(ast) {
 Sql.prototype.travelAssignments = function(ast) {
   for (var i = 0; i < ast.value.length; i++) {
     var x = ast.value[i];
-    this.travelIdentifier(x.left);
+    this.travel(x.left);
     this.travel('=');
-    this.travelIdentifier(x.right);
+    this.travel(x.right);
 
     if (i !== ast.value.length - 1) {
       this.append(',', true);

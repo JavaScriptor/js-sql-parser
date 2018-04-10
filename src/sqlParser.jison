@@ -15,6 +15,8 @@
 [\w]+[\u4e00-\u9fa5]+[0-9a-zA-Z_\u4e00-\u9fa5]*                   return 'IDENTIFIER'
 [\u4e00-\u9fa5][0-9a-zA-Z_\u4e00-\u9fa5]*                         return 'IDENTIFIER'
 SELECT                                                            return 'SELECT'
+INSERT                                                            return 'INSERT'
+DEFAULT                                                           return 'DEFAULT'
 ALL                                                               return 'ALL'
 ANY                                                               return 'ANY'
 DISTINCT                                                          return 'DISTINCT'
@@ -67,6 +69,8 @@ ORDER\s+BY                                                        return 'ORDER_
 GROUP\s+BY                                                        return 'GROUP_BY'
 IGNORE                                                            return 'IGNORE'
 LOW_PRIORITY                                                      return 'LOW_PRIORITY'
+DELAYED                                                           return 'DELAYED'
+HIGH_PRIORITY                                                     return 'HIGH_PRIORITY'
 FORCE                                                             return 'FORCE'
 INNER                                                             return 'INNER'
 CROSS                                                             return 'CROSS'
@@ -91,6 +95,12 @@ SHARE                                                             return 'SHARE'
 MODE                                                              return 'MODE'
 OJ                                                                return 'OJ'
 LIMIT                                                             return 'LIMIT'
+INTO                                                              return 'INTO'
+VALUE                                                             return 'VALUE'
+VALUES                                                            return 'VALUES'
+DUPLICATE                                                         return 'DUPLICATE'
+KEY                                                               return 'KEY'
+UPDATE                                                            return 'UPDATE'
 
 ","                                                               return ','
 "="                                                               return '='
@@ -168,13 +178,74 @@ main
 query
   : selectClause
   | updateClause
+  | insertClause
+  ;
+
+insertClause
+  : INSERT priority_opt ignore_opt
+      into_opt simple_table_factor
+    partitionOpt
+    insert_cols
+    insert_source
+    on_dup_assigns
+    {
+      $$ = {
+        type: 'Insert',
+        priority: $2,
+        ignore: $3,
+        into: $4,
+        table: $5,
+        partitions: $6,
+        cols: $7,
+        src: $8,
+        duplicateAssignments: $9
+      }
+    }
+  ;
+
+insert_source
+  : insert_value value_list_list { $$ = { type: 'Values', keyword: $1, values: $2 } }
+  | selectClause
+  ;
+
+on_dup_assigns
+  : { $$ = null}
+  | ON DUPLICATE KEY UPDATE assignment_list { $$ = $5 }
+  ;
+
+insert_cols
+  : { $$ = null}
+  | '(' identifier_list ')' { $$ = $2 }
+  ;
+
+value
+  : expr | DEFAULT
+  ;
+
+value_list
+  : value_list ',' value { $1.value.push($3); }
+  | value { $$ = { type: 'ValueList', value: [ $1 ] } }
+  ;
+
+value_list_list
+  : value_list_list ',' '(' value_list ')' { $1.value.push($4); }
+  | '(' value_list ')' { $$ = { type: 'InsertList', value: [ $2 ] } }
+  ;
+
+insert_value
+  : VALUE | VALUES
+  ;
+
+into_opt
+  : { $$ = null }
+  | INTO { $$ = $1 }
   ;
 
 updateClause
   : UPDATE low_priority_opt ignore_opt
       table_refrences
     SET
-      assignmentList
+      assignment_list
     where_opt
     order_by_opt
     limit_opt
@@ -197,6 +268,13 @@ low_priority_opt
   | LOW_PRIORITY { $$ = $1 }
   ;
 
+priority_opt
+  : { $$ = null }
+  | LOW_PRIORITY { $$ = $1 }
+  | HIGH_PRIORITY { $$ = $1 }
+  | DELAYED { $$ = $1 }
+  ;
+
 ignore_opt
   : { $$ = null }
   | IGNORE { $$ = $1 }
@@ -206,8 +284,8 @@ assignment
   : identifier '=' expr { $$ = { type: 'Assignment', left: $1, right: $3 } }
   ;
 
-assignmentList
-  : assignmentList ',' assignment { $1.value.push($3); }
+assignment_list
+  : assignment_list ',' assignment { $1.value.push($3); }
   | assignment { $$ = { type: 'AssignmentList', value: [ $1 ] } }
   ;
 
@@ -603,8 +681,11 @@ index_hint
   | IGNORE index_or_key for_opt '(' identifier_list ')' { $$ = { type: 'IgnoreIndexHint', value: $5, forOpt: $3, indexOrKey: $2 } }
   | FORCE index_or_key for_opt '(' identifier_list ')' { $$ = { type: 'ForceIndexHint', value: $5, forOpt: $3, indexOrKey: $2 } }
   ;
-table_factor
+simple_table_factor
   : identifier partitionOpt aliasOpt index_hint_list_opt { $$ = { type: 'TableFactor', value: $1, partition: $2, alias: $3.alias, hasAs: $3.hasAs, indexHintOpt: $4 } }
+  ;
+table_factor
+  : simple_table_factor
   | '(' selectClause ')' aliasOpt { $$ = { type: 'SubQuery', value: $2, alias: $4.alias, hasAs: $4.hasAs } }
   | '(' table_refrences ')' { $$ = $2; $$.hasParentheses = true }
   ;

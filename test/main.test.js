@@ -137,6 +137,10 @@ AND (rd.rd_numberofrooms <= (select sum(rn.reservation_numberofrooms) as count_r
     testParser('select a from b limit 2;');
   });
 
+  it ('subquery.', function () {
+    testParser('select a from (select 1 as x) b limit 2;');
+  });
+
   it('update0', function () {
     testParser('update A SET b=2 WHERE c=3;');
   });
@@ -147,5 +151,44 @@ AND (rd.rd_numberofrooms <= (select sum(rn.reservation_numberofrooms) as count_r
 
   it('update2', function () {
     testParser('update LOW_PRIORITY ignore A, B, C SET b=2, `C`.c=d WHERE e=4 ORDER BY d DESC limit 1;');
+  });
+
+  it('insert0', function () {
+    testParser('INSERT INTO A VALUES (a, `b`), (c, 3)');
+  });
+
+  it('insert1', function () {
+    testParser('INSERT DELAYED IGNORE INTO A VALUE (a, DEFAULT, 3+2)');
+  });
+
+  it('insert2', function () {
+    testParser('INSERT DELAYED IGNORE INTO A VALUE (a, `b`)');
+  });
+
+  it('insert3', function () {
+    testParser('INSERT DELAYED IGNORE INTO A (`a`, b, c) VALUE (1, 2+3)');
+  });
+
+  it('insert4', function () {
+    testParser('INSERT DELAYED IGNORE INTO `s0`.`A` PARTITION (p0, p1) (`a`, b, c) VALUE (1, 2+3)');
+  });
+
+  it('insert5', function () {
+    testParser(`
+  INSERT DELAYED IGNORE INTO \`s0\`.\`A\`
+  PARTITION (p0, p1) (\`a\`, b, c)
+  VALUE (1, 2+3), (5, '6')
+  ON DUPLICATE KEY UPDATE q=q+1, c=b
+`);
+  });
+
+  it('insert6', function () {
+    testParser(`
+  INSERT HIGH_PRIORITY \`massdrop\`.\`A\`
+  PARTITION (p0, p1) (\`a\`, b, c)
+  SELECT 1+1 as b, d
+  FROM B
+  ON DUPLICATE KEY UPDATE q=q+1, c=b
+`);
   });
 });
