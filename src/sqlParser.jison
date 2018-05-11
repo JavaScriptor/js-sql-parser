@@ -406,6 +406,7 @@ literal
   ;
 function_call
   : IDENTIFIER '(' function_call_param_list ')' { $$ = {type: 'FunctionCall', name: $1, params: $3} }
+  | VALUES '(' function_call_param_list ')' { $$ = {type: 'FunctionCall', name: $1, params: $3} }
   ;
 function_call_param_list
   : function_call_param_list ',' function_call_param { $1.push($3); $$ = $1; }

@@ -191,4 +191,14 @@ AND (rd.rd_numberofrooms <= (select sum(rn.reservation_numberofrooms) as count_r
   ON DUPLICATE KEY UPDATE q=q+1, c=b
 `);
   });
+
+  it('insert values', function () {
+    testParser(`
+  INSERT HIGH_PRIORITY \`massdrop\`.\`A\`
+  PARTITION (p0, p1) (\`a\`, b, c)
+  SELECT 1+1 as b, d
+  FROM B
+  ON DUPLICATE KEY UPDATE q=VALUES(\`q\`)+1
+`);
+  });
 });
