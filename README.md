@@ -56,10 +56,13 @@ var sql = sqlParser.stringify(ast);
 
 ...
 
+## LICENSE
+
+MIT
+
 [travis-image]: https://api.travis-ci.org/JavaScriptor/js-sql-parser.svg
 [travis-url]: https://travis-ci.org/JavaScriptor/js-sql-parser
 [npm-image]: https://img.shields.io/npm/v/js-sql-parser.svg
 [npm-url]: https://npmjs.org/package/js-sql-parser
 [downloads-image]: https://img.shields.io/npm/dm/js-sql-parser.svg
 [downloads-url]: https://npmjs.org/package/js-sql-parser
-
