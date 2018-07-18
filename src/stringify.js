@@ -161,8 +161,8 @@ Sql.prototype.travelXORExpression = function (ast) {
   this.appendKeyword(ast.operator);
   this.travel(ast.right);
 }
-Sql.prototype.travelNull = 
-Sql.prototype.travelBoolean = 
+Sql.prototype.travelNull =
+Sql.prototype.travelBoolean =
 Sql.prototype.travelBooleanExtra = function (ast) {
   this.appendKeyword(ast.value);
 }
@@ -184,6 +184,12 @@ Sql.prototype.travelFunctionCall = function (ast) {
     }
   }
   this.append(')', true);
+  if (ast.alias) {
+    if (ast.hasAs) {
+      this.appendKeyword('as');
+    }
+    this.travel(ast.alias);
+  }
 }
 Sql.prototype.travelFunctionCallParam = function (ast) {
   if (ast.distinctOpt) {

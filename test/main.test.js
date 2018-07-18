@@ -136,5 +136,10 @@ AND (rd.rd_numberofrooms <= (select sum(rn.reservation_numberofrooms) as count_r
   it ('restore semicolon.', function () {
     testParser('select a from b limit 2;');
   });
+
+  it ('recognoce alias for sql-function calls in stringify function.', function () {
+    testParser('SELECT COUNT(*) AS total FROM b');
+  });
+
 });
 
