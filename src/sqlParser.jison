@@ -28,7 +28,7 @@ SQL_BUFFER_RESULT                                                 return 'SQL_BU
 SQL_CACHE                                                         return 'SQL_CACHE'
 SQL_NO_CACHE                                                      return 'SQL_NO_CACHE'
 SQL_CALC_FOUND_ROWS                                               return 'SQL_CALC_FOUND_ROWS'
-([a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]+\.){1,2}\*       return 'SELECT_EXPR_STAR'
+([a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*\.){1,2}\*       return 'SELECT_EXPR_STAR'
 AS                                                                return 'AS'
 TRUE                                                              return 'TRUE'
 FALSE                                                             return 'FALSE'
