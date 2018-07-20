@@ -8,23 +8,6 @@
 
 sql grammar follows https://dev.mysql.com/doc/refman/5.7/en/select.html
 
-
-## TODO
-
-- ${value} like value place holder support.
-- benchmark
-
-## unsupport currently
-
-- Hexadecimal Literals as x'01af' X'01af', but 0x01af is supported.
-- keyword COLLATE.
-- parammarker: keyword PREPARE / EXECUTE / DEALLOCATE
-- variable: keyword SET / CREATE PROCEDURE / CREATE FUNCTION
-- identifier expr: ODBC escape syntax
-- matchexpr: Full-Text Search Functions. // to support
-- intervalexpr: Date INTERVAL keyword.   // to support
-- into outfile: INTO OUTFILE keyword.    // to support
-
 ## commonjs usage
 
 `npm install --save js-sql-parser`
@@ -52,9 +35,24 @@ var ast = sqlParser.parse('select * from dual');
 var sql = sqlParser.stringify(ast);
 ```
 
-## AMD support
+## AMD supported
 
 ...
+
+## unsupported grammar currently
+
+- Hexadecimal Literals as x'01af' X'01af', but 0x01af is supported.
+- keyword COLLATE.
+- parammarker: keyword PREPARE / EXECUTE / DEALLOCATE
+- variable: keyword SET / CREATE PROCEDURE / CREATE FUNCTION
+- identifier expr: ODBC escape syntax
+- matchexpr: Full-Text Search Functions. // to support
+- intervalexpr: Date INTERVAL keyword.   // to support
+- into outfile: INTO OUTFILE keyword.    // to support
+
+## TODO
+
+- ${value} like value place holder support.
 
 ## LICENSE
 
