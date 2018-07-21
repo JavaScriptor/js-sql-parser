@@ -21,8 +21,7 @@ const testParser = function (sql) {
   return secondAst;
 }
 
-
-describe('simple sql support', function () {
+describe('select grammar support', function () {
   it('test0', function () {
     testParser('select a from b where c > 1 group by d order by e desc;');
   });
@@ -62,7 +61,7 @@ describe('simple sql support', function () {
     testParser('select function(), function(1, "sd", 0x1F)');
   });
 
-  it ('test6', function () {
+  it ('test6 unicode', function () {
     testParser(`
       select in中文 from tags
     `);
@@ -70,19 +69,22 @@ describe('simple sql support', function () {
 
   it ('test7', function () {
     testParser(`
-SELECT DISTINCT high_priority MAX_STATEMENT_TIME=1 STRAIGHT_JOIN SQL_SMALL_RESULT SQL_BIG_RESULT SQL_BUFFER_RESULT SQL_CACHE SQL_CALC_FOUND_ROWS fm_customer.lname AS 名字1,
-         fm_customer.fname AS 名字2,
-         fm_customer.address1 AS 地址1,
-        fm_customer.phone1 AS 电话1,
-        fm_customer.yearly_income AS 年收入,
-        fm_customer.num_cars_owned AS 拥有车辆数
-FROM fm_customer
-INNER JOIN fm_sales_link
-    ON fm_customer.customer_id = fm_sales_link.fm_customer.customer_id
-        AND fm_sales_link.store_sales IS NOT NULL\nAND fm_sales_link.store_cost IS NOT NULL\nAND fm_sales_link.unit_sales IS NOT NULL
-INNER JOIN fm_store
-    ON fm_sales_link.fm_store.store_id = fm_store.store_id
-        AND fm_store.store_name IS NOT NULL
+      SELECT 
+        DISTINCT high_priority MAX_STATEMENT_TIME=1 STRAIGHT_JOIN SQL_SMALL_RESULT SQL_BIG_RESULT SQL_BUFFER_RESULT SQL_CACHE SQL_CALC_FOUND_ROWS fm_customer.lname AS name1,
+        fm_customer.fname AS name2,
+        fm_customer.address1 AS addr1,
+        fm_customer.phone1 AS tel1,
+        fm_customer.yearly_income AS amount,
+        fm_customer.num_cars_owned AS car_num
+      FROM fm_customer
+      INNER JOIN fm_sales_link
+      ON fm_customer.customer_id = fm_sales_link.fm_customer.customer_id
+         AND fm_sales_link.store_sales IS NOT NULL
+         AND fm_sales_link.store_cost IS NOT NULL
+         AND fm_sales_link.unit_sales IS NOT NULL
+      INNER JOIN fm_store
+      ON fm_sales_link.fm_store.store_id = fm_store.store_id
+         AND fm_store.store_name IS NOT NULL
     `);
   });
 
@@ -113,35 +115,35 @@ INNER JOIN fm_store
 
   it ('test10', function () {
     testParser(`
-SELECT rd.*, rd.rd_numberofrooms - (
-      SELECT SUM(rn.reservation_numberofrooms) AS count_reserve_room
-      FROM reservation rn
-      WHERE rn.reservation_rd_id = rd.rd_id
-        AND (str_to_date('$data_Check_in_date', '%d-%m-%y') BETWEEN str_to_date(rn.reservation_check_in_date, '%d-%m-%y') AND str_to_date(rn.reservation_check_out_date, '%d-%m-%y')
-        OR str_to_date('$data_Check_out_date', '%d-%m-%y') BETWEEN str_to_date(rn.reservation_check_in_date, '%d-%m-%y') AND str_to_date(rn.reservation_check_out_date, '%d-%m-%y')
-        OR str_to_date('$data_Check_in_date', '%d-%m-%y') <= str_to_date(rn.reservation_check_in_date, '%d-%m-%y')
-          AND str_to_date('$data_Check_out_date', '%d-%m-%y'))
-    ) AS reserve
-  FROM room_details rd
-    LEFT JOIN reservation rn ON rd.rd_id = rn.reservation_rd_id
-  WHERE NOT EXISTS (
-    SELECT rn.*
-    FROM reservation rn
-    WHERE (rn.reservation_rd_id = rd.rd_id
-      AND ((str_to_date('$data_Check_in_date', '%d-%m-%y') BETWEEN str_to_date(rn.reservation_check_in_date, '%d-%m-%y') AND str_to_date(rn.reservation_check_out_date, '%d-%m-%y')
-        OR str_to_date('$data_Check_out_date', '%d-%m-%y') BETWEEN str_to_date(rn.reservation_check_in_date, '%d-%m-%y') AND str_to_date(rn.reservation_check_out_date, '%d-%m-%y')
-        OR str_to_date('$data_Check_in_date', '%d-%m-%y') <= str_to_date(rn.reservation_check_in_date, '%d-%m-%y')
-          AND str_to_date('$data_Check_out_date', '%d-%m-%y') >= str_to_date(rn.reservation_check_out_date, '%d-%m-%y')))
-      AND (rd.rd_numberofrooms <= (
+      SELECT rd.*, rd.rd_numberofrooms - (
         SELECT SUM(rn.reservation_numberofrooms) AS count_reserve_room
         FROM reservation rn
         WHERE rn.reservation_rd_id = rd.rd_id
           AND (str_to_date('$data_Check_in_date', '%d-%m-%y') BETWEEN str_to_date(rn.reservation_check_in_date, '%d-%m-%y') AND str_to_date(rn.reservation_check_out_date, '%d-%m-%y')
           OR str_to_date('$data_Check_out_date', '%d-%m-%y') BETWEEN str_to_date(rn.reservation_check_in_date, '%d-%m-%y') AND str_to_date(rn.reservation_check_out_date, '%d-%m-%y')
           OR str_to_date('$data_Check_in_date', '%d-%m-%y') <= str_to_date(rn.reservation_check_in_date, '%d-%m-%y')
-            AND str_to_date('$data_Check_out_date', '%d-%m-%y'))
-      )))
-  )
+          AND str_to_date('$data_Check_out_date', '%d-%m-%y'))
+      ) AS reserve
+      FROM room_details rd
+      LEFT JOIN reservation rn ON rd.rd_id = rn.reservation_rd_id
+      WHERE NOT EXISTS (
+        SELECT rn.*
+        FROM reservation rn
+        WHERE (rn.reservation_rd_id = rd.rd_id
+          AND ((str_to_date('$data_Check_in_date', '%d-%m-%y') BETWEEN str_to_date(rn.reservation_check_in_date, '%d-%m-%y') AND str_to_date(rn.reservation_check_out_date, '%d-%m-%y')
+            OR str_to_date('$data_Check_out_date', '%d-%m-%y') BETWEEN str_to_date(rn.reservation_check_in_date, '%d-%m-%y') AND str_to_date(rn.reservation_check_out_date, '%d-%m-%y')
+            OR str_to_date('$data_Check_in_date', '%d-%m-%y') <= str_to_date(rn.reservation_check_in_date, '%d-%m-%y')
+              AND str_to_date('$data_Check_out_date', '%d-%m-%y') >= str_to_date(rn.reservation_check_out_date, '%d-%m-%y')))
+          AND (rd.rd_numberofrooms <= (
+            SELECT SUM(rn.reservation_numberofrooms) AS count_reserve_room
+            FROM reservation rn
+            WHERE rn.reservation_rd_id = rd.rd_id
+              AND (str_to_date('$data_Check_in_date', '%d-%m-%y') BETWEEN str_to_date(rn.reservation_check_in_date, '%d-%m-%y') AND str_to_date(rn.reservation_check_out_date, '%d-%m-%y')
+              OR str_to_date('$data_Check_out_date', '%d-%m-%y') BETWEEN str_to_date(rn.reservation_check_in_date, '%d-%m-%y') AND str_to_date(rn.reservation_check_out_date, '%d-%m-%y')
+              OR str_to_date('$data_Check_in_date', '%d-%m-%y') <= str_to_date(rn.reservation_check_in_date, '%d-%m-%y')
+                AND str_to_date('$data_Check_out_date', '%d-%m-%y'))
+          )))
+      )
     `);
   });
 
@@ -151,206 +153,194 @@ SELECT rd.*, rd.rd_numberofrooms - (
 
   it ('test12', function () {
     testParser(`
-select
-    a.product_id,
-    a.product_name,
-    count(a.ins_id) as ins_num,
-    -- 性别
-    count(a.f) as f_num,
-    count(a.m) as m_num,
-    -- 成员数
-    count(a.p_1) as p_1_num,
-    count(a.p_2) as p_1_num,
-    count(a.p_3) as p_1_num,
-    count(a.gt3) as gt3_num,
-    -- 年龄
-    count(lt25) as lt25_num,
-    count(gt25lt35) as gt25lt35_num,
-    count(gt35lt45) as gt25lt35_num,
-    count(gt45lt55) as gt25lt35_num,
-    count(gt55) as gt55_num
-from(
-    select
-            a.ins_id,
-            b.product_id,
-            b.product_name,
-            c.cust_id,
-            c.cust_name,
-            c.cust_sex,
-            c.cust_age,
-            c.family_num,
-            -- 男
-            -- 这个地方根据数据库字段的不同，处理方式也不同
-            -- 如果数据库中cust_sex的数据类型本身就是0和1，那么就不需要转换
-            -- 只列出来即可
-            (case when c.cust_sex='男' then 1 else 0 end) as f,
-            -- 女
-            (case when c.cust_sex='女' then 1 else 0 end) as m,
-            -- 其他的依次类推
-            -- 家庭成员数
-            (case when c.family_num=1 then 1 else 0 end) as p_1,
-            (case when c.family_num=2 then 1 else 0 end) as P_2,
-            (case when c.family_num=3 then 1 else 0 end) as p_3,
-            (case when c.family_num>3 then 1 else 0 end) as gt3,
-            -- 客户年龄
-            (case when c.cust_age<=25 then 1 else 0 end) as lt25,
-            (case when c.cust_age>25 and c.cust_age<=35 then 1 else 0 end) as gt25lt35,
-            (case when c.cust_age>35 and c.cust_age<=45 then 1 else 0 end) as gt35lt45,
-            (case when c.cust_age>45 and c.cust_age<=55 then 1 else 0 end) as gt45lt55,
-            (case when c.cust_age>55 then 1 else 0 end) as gt55
-    from
-            insurance a,
-            product b,
-            customer c
-    where
-            a.product_id=b.product_id
-            and a.cust_id=c.cust_id
-) a
-group by b.product_id, b.product_name
+      select
+          a.product_id,
+          a.product_name,
+          count(a.ins_id) as ins_num,
+          count(a.f) as f_num,
+          count(a.m) as m_num,
+          count(a.p_1) as p_1_num,
+          count(a.p_2) as p_1_num,
+          count(a.p_3) as p_1_num,
+          count(a.gt3) as gt3_num,
+          count(lt25) as lt25_num,
+          count(gt25lt35) as gt25lt35_num,
+          count(gt35lt45) as gt25lt35_num,
+          count(gt45lt55) as gt25lt35_num,
+          count(gt55) as gt55_num
+      from(
+          select
+                  a.ins_id,
+                  b.product_id,
+                  b.product_name,
+                  c.cust_id,
+                  c.cust_name,
+                  c.cust_sex,
+                  c.cust_age,
+                  c.family_num,
+                  (case when c.cust_sex='f' then 1 else 0 end) as f,
+                  (case when c.cust_sex='m' then 1 else 0 end) as m,
+                  (case when c.family_num=1 then 1 else 0 end) as p_1,
+                  (case when c.family_num=2 then 1 else 0 end) as P_2,
+                  (case when c.family_num=3 then 1 else 0 end) as p_3,
+                  (case when c.family_num>3 then 1 else 0 end) as gt3,
+                  (case when c.cust_age<=25 then 1 else 0 end) as lt25,
+                  (case when c.cust_age>25 and c.cust_age<=35 then 1 else 0 end) as gt25lt35,
+                  (case when c.cust_age>35 and c.cust_age<=45 then 1 else 0 end) as gt35lt45,
+                  (case when c.cust_age>45 and c.cust_age<=55 then 1 else 0 end) as gt45lt55,
+                  (case when c.cust_age>55 then 1 else 0 end) as gt55
+          from
+                  insurance a,
+                  product b,
+                  customer c
+          where
+                  a.product_id=b.product_id
+                  and a.cust_id=c.cust_id
+      ) a
+      group by b.product_id, b.product_name
     `);
   });
 
   it ('test13', function () {
     testParser(`
-    SELECT
-    a.*, f.ORG_NAME DEPT_NAME,
-    IFNULL(d.CONT_COUNT, 0) SIGN_CONT_COUNT,
-    IFNULL(d.TOTAL_PRICE, 0) SIGN_CONT_MONEY,
-    IFNULL(c.CONT_COUNT, 0) SIGN_ARRI_CONT_COUNT,
-    IFNULL(c.TOTAL_PRICE, 0) SIGN_ARRI_CONT_MONEY,
-    IFNULL(b.CONT_COUNT, 0) TOTAL_ARRI_CONT_COUNT,
-    IFNULL(b.TOTAL_PRICE, 0) TOTAL_ARRI_MONEY,
-    0 PUBLISH_TOTAL_COUNT,
-    0 PROJECT_COUNT,
-    0 COMMON_COUNT,
-    0 STOCK_COUNT,
-    0 MERGER_COUNT,
-    0 INDUSTRY_COUNT,
-    0 BRAND_COUNT
-FROM
-    (
-        -- 查询包含客户经理,部门主管,公司主管三种类型所有分公司的人员
-        SELECT
-            u.USER_ID,
-            u.REAL_NAME,
-            u.ORG_PARENT_ID,
-            o.ORG_NAME,
-            u.ORG_ID
-        FROM
-            SE_USER u
-        INNER JOIN SE_ORGANIZ o ON u.ORG_PARENT_ID = o.ORG_ID
-        WHERE
-            u.\`STATUS\` = 1
-        AND u.\`LEVEL\` IN (1, 2, 3)
-        AND o.PARENT_ID <> 0
-    ) a
--- 查询部门名称
-LEFT JOIN SE_ORGANIZ f ON a.ORG_ID = f.ORG_ID
--- 签约合同数与合同金额
-LEFT JOIN (
-    SELECT
-        CUST_MGR_ID,
-        COUNT(CONT_ID) CONT_COUNT,
-        SUM(TOTAL_PRICE) TOTAL_PRICE
-    FROM
-        SE_CONTRACT
-    WHERE
-        DATE_FORMAT(CREATE_TIME, '%Y-%m-%d') = '2012-06-08'
-    GROUP BY
-        CUST_MGR_ID
-) d ON a.USER_ID = d.CUST_MGR_ID
--- 签约并回款合同数与回款金额
-LEFT JOIN (
-    SELECT
-        CUST_MGR_ID,
-        COUNT(CONT_ID) CONT_COUNT,
-        SUM(TOTAL_PRICE) TOTAL_PRICE
-    FROM
-        SE_CONTRACT
-    WHERE
-        (STATUS = 6 OR STATUS = 10)
-    AND DATE_FORMAT(CREATE_TIME, '%Y-%m-%d') = '2012-06-08'
-    GROUP BY
-        CUST_MGR_ID
-) c ON a.USER_ID = c.CUST_MGR_ID
--- 总回款合同数与总回款金额
-LEFT JOIN (
-    SELECT
-        c.CUST_MGR_ID,
-        COUNT(c.CONT_ID) CONT_COUNT,
-        SUM(c.TOTAL_PRICE) TOTAL_PRICE
-    FROM
-        SE_CONTRACT c
-    INNER JOIN SE_CONT_AUDIT a ON c.CONT_ID = a.CONT_ID
-    WHERE
-        (c. STATUS = 6 OR c. STATUS = 10)
-    AND a.IS_PASS = 1
-    AND DATE_FORMAT(a.AUDIT_TIME, '%Y-%m-%d') = '2012-06-08'
-    GROUP BY
-        c.CUST_MGR_ID
-) b ON a.USER_ID = b.CUST_MGR_ID
-ORDER BY
-    a.ORG_PARENT_ID,
-    a.USER_ID
+      SELECT
+          a.*, f.ORG_NAME DEPT_NAME,
+          IFNULL(d.CONT_COUNT, 0) SIGN_CONT_COUNT,
+          IFNULL(d.TOTAL_PRICE, 0) SIGN_CONT_MONEY,
+          IFNULL(c.CONT_COUNT, 0) SIGN_ARRI_CONT_COUNT,
+          IFNULL(c.TOTAL_PRICE, 0) SIGN_ARRI_CONT_MONEY,
+          IFNULL(b.CONT_COUNT, 0) TOTAL_ARRI_CONT_COUNT,
+          IFNULL(b.TOTAL_PRICE, 0) TOTAL_ARRI_MONEY,
+          0 PUBLISH_TOTAL_COUNT,
+          0 PROJECT_COUNT,
+          0 COMMON_COUNT,
+          0 STOCK_COUNT,
+          0 MERGER_COUNT,
+          0 INDUSTRY_COUNT,
+          0 BRAND_COUNT
+      FROM
+          (
+              SELECT
+                  u.USER_ID,
+                  u.REAL_NAME,
+                  u.ORG_PARENT_ID,
+                  o.ORG_NAME,
+                  u.ORG_ID
+              FROM
+                  SE_USER u
+              INNER JOIN SE_ORGANIZ o ON u.ORG_PARENT_ID = o.ORG_ID
+              WHERE
+                  u.\`STATUS\` = 1
+              AND u.\`LEVEL\` IN (1, 2, 3)
+              AND o.PARENT_ID <> 0
+          ) a
+      -- 查询部门名称
+      LEFT JOIN SE_ORGANIZ f ON a.ORG_ID = f.ORG_ID
+      -- 签约合同数与合同金额
+      LEFT JOIN (
+          SELECT
+              CUST_MGR_ID,
+              COUNT(CONT_ID) CONT_COUNT,
+              SUM(TOTAL_PRICE) TOTAL_PRICE
+          FROM
+              SE_CONTRACT
+          WHERE
+              DATE_FORMAT(CREATE_TIME, '%Y-%m-%d') = '2012-06-08'
+          GROUP BY
+              CUST_MGR_ID
+      ) d ON a.USER_ID = d.CUST_MGR_ID
+      -- 签约并回款合同数与回款金额
+      LEFT JOIN (
+          SELECT
+              CUST_MGR_ID,
+              COUNT(CONT_ID) CONT_COUNT,
+              SUM(TOTAL_PRICE) TOTAL_PRICE
+          FROM
+              SE_CONTRACT
+          WHERE
+              (STATUS = 6 OR STATUS = 10)
+          AND DATE_FORMAT(CREATE_TIME, '%Y-%m-%d') = '2012-06-08'
+          GROUP BY
+              CUST_MGR_ID
+      ) c ON a.USER_ID = c.CUST_MGR_ID
+      -- 总回款合同数与总回款金额
+      LEFT JOIN (
+          SELECT
+              c.CUST_MGR_ID,
+              COUNT(c.CONT_ID) CONT_COUNT,
+              SUM(c.TOTAL_PRICE) TOTAL_PRICE
+          FROM
+              SE_CONTRACT c
+          INNER JOIN SE_CONT_AUDIT a ON c.CONT_ID = a.CONT_ID
+          WHERE
+              (c. STATUS = 6 OR c. STATUS = 10)
+          AND a.IS_PASS = 1
+          AND DATE_FORMAT(a.AUDIT_TIME, '%Y-%m-%d') = '2012-06-08'
+          GROUP BY
+              c.CUST_MGR_ID
+      ) b ON a.USER_ID = b.CUST_MGR_ID
+      ORDER BY
+          a.ORG_PARENT_ID,
+          a.USER_ID
     `);
   });
 
   it ('test14', function () {
     testParser(`
-    SELECT
-    k.*,
-IF (
-    k.LAST_PUBLISH_TOTAL_COUNT > 0,
-    ROUND((k.RISE_PUBLISH_TOTAL_COUNT / k.LAST_PUBLISH_TOTAL_COUNT) * 100, 2),
-    0
-) RELATIVE_PUBLISH_RATIO,
-IF (
-    k.LAST_PROJECT_COUNT > 0,
-    ROUND((k.RISE_PROJECT_COUNT / k.LAST_PROJECT_COUNT) * 100, 2),
-    0
-) RELATIVE_PROJECT_RATIO,
-IF (
-    k.LAST_COMMON_COUNT > 0,
-    ROUND((k.RISE_COMMON_COUNT / k.LAST_COMMON_COUNT) * 100, 2),
-    0
-) RELATIVE_COMMON_RATIO
-FROM
-    (
-        SELECT
-            m.ORG_NAME,
-            IFNULL(n.LAST_PUBLISH_TOTAL_COUNT, 0) LAST_PUBLISH_TOTAL_COUNT,
-            IFNULL(n.LAST_PROJECT_COUNT, 0) LAST_PROJECT_COUNT,
-            IFNULL(n.LAST_COMMON_COUNT, 0) LAST_COMMON_COUNT,
-            m.PUBLISH_TOTAL_COUNT,
-            m.PROJECT_COUNT,
-            m.COMMON_COUNT,
-            IFNULL(m.PUBLISH_TOTAL_COUNT - n.LAST_PUBLISH_TOTAL_COUNT, 0) RISE_PUBLISH_TOTAL_COUNT,
-            IFNULL(m.PROJECT_COUNT - n.LAST_PROJECT_COUNT, 0) RISE_PROJECT_COUNT,
-            IFNULL(m.COMMON_COUNT - n.LAST_COMMON_COUNT, 0) RISE_COMMON_COUNT
-        FROM
-            (
+      SELECT
+          k.*,
+      IF (
+          k.LAST_PUBLISH_TOTAL_COUNT > 0,
+          ROUND((k.RISE_PUBLISH_TOTAL_COUNT / k.LAST_PUBLISH_TOTAL_COUNT) * 100, 2),
+          0
+      ) RELATIVE_PUBLISH_RATIO,
+      IF (
+          k.LAST_PROJECT_COUNT > 0,
+          ROUND((k.RISE_PROJECT_COUNT / k.LAST_PROJECT_COUNT) * 100, 2),
+          0
+      ) RELATIVE_PROJECT_RATIO,
+      IF (
+          k.LAST_COMMON_COUNT > 0,
+          ROUND((k.RISE_COMMON_COUNT / k.LAST_COMMON_COUNT) * 100, 2),
+          0
+      ) RELATIVE_COMMON_RATIO
+      FROM
+        (
+            SELECT
+                m.ORG_NAME,
+                IFNULL(n.LAST_PUBLISH_TOTAL_COUNT, 0) LAST_PUBLISH_TOTAL_COUNT,
+                IFNULL(n.LAST_PROJECT_COUNT, 0) LAST_PROJECT_COUNT,
+                IFNULL(n.LAST_COMMON_COUNT, 0) LAST_COMMON_COUNT,
+                m.PUBLISH_TOTAL_COUNT,
+                m.PROJECT_COUNT,
+                m.COMMON_COUNT,
+                IFNULL(m.PUBLISH_TOTAL_COUNT - n.LAST_PUBLISH_TOTAL_COUNT, 0) RISE_PUBLISH_TOTAL_COUNT,
+                IFNULL(m.PROJECT_COUNT - n.LAST_PROJECT_COUNT, 0) RISE_PROJECT_COUNT,
+                IFNULL(m.COMMON_COUNT - n.LAST_COMMON_COUNT, 0) RISE_COMMON_COUNT
+            FROM
+                (
+                    SELECT
+                        'c' AS ORG_NAME,
+                        SUM(PUBLISH_TOTAL_COUNT) AS PUBLISH_TOTAL_COUNT,
+                        SUM(PROJECT_COUNT) AS PROJECT_COUNT,
+                        SUM(COMMON_COUNT) AS COMMON_COUNT
+                    FROM
+                        SE_STAT_ORG
+                    WHERE
+                        DATE_FORMAT(RECORD_DATE, '%Y-%m') = '2012-07'
+                ) m
+            LEFT JOIN (
                 SELECT
-                    '全国' AS ORG_NAME,
-                    SUM(PUBLISH_TOTAL_COUNT) AS PUBLISH_TOTAL_COUNT,
-                    SUM(PROJECT_COUNT) AS PROJECT_COUNT,
-                    SUM(COMMON_COUNT) AS COMMON_COUNT
+                    'c' AS ORG_NAME,
+                    SUM(PUBLISH_TOTAL_COUNT) AS LAST_PUBLISH_TOTAL_COUNT,
+                    SUM(PROJECT_COUNT) AS LAST_PROJECT_COUNT,
+                    SUM(COMMON_COUNT) AS LAST_COMMON_COUNT
                 FROM
                     SE_STAT_ORG
                 WHERE
-                    DATE_FORMAT(RECORD_DATE, '%Y-%m') = '2012-07'
-            ) m
-        LEFT JOIN (
-            SELECT
-                '全国' AS ORG_NAME,
-                SUM(PUBLISH_TOTAL_COUNT) AS LAST_PUBLISH_TOTAL_COUNT,
-                SUM(PROJECT_COUNT) AS LAST_PROJECT_COUNT,
-                SUM(COMMON_COUNT) AS LAST_COMMON_COUNT
-            FROM
-                SE_STAT_ORG
-            WHERE
-                DATE_FORMAT(RECORD_DATE, '%Y-%m') = '2012-06'
-        ) n ON m.ORG_NAME = n.ORG_NAME
-    ) k
+                    DATE_FORMAT(RECORD_DATE, '%Y-%m') = '2012-06'
+            ) n ON m.ORG_NAME = n.ORG_NAME
+        ) k
     `);
   });
 
