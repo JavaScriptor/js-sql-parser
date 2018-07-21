@@ -54,6 +54,10 @@ var sql = sqlParser.stringify(ast);
 
 - ${value} like value place holder support.
 
+## Build
+
+- Run `npm run build` to build the distributable.
+
 ## LICENSE
 
 MIT
