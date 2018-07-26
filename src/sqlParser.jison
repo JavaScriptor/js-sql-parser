@@ -10,10 +10,12 @@
 [-][-]\s.*\n                                                      /* skip sql comments */
 [#]\s.*\n                                                         /* skip sql comments */
 \s+                                                               /* skip whitespace */
-                                                                  
+
 [`][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*[`]            return 'IDENTIFIER'
 [\w]+[\u4e00-\u9fa5]+[0-9a-zA-Z_\u4e00-\u9fa5]*                   return 'IDENTIFIER'
 [\u4e00-\u9fa5][0-9a-zA-Z_\u4e00-\u9fa5]*                         return 'IDENTIFIER'
+[\$:][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*             return 'PREP_TERM'
+[?]                                                               return 'PREP_TERM'
 SELECT                                                            return 'SELECT'
 ALL                                                               return 'ALL'
 ANY                                                               return 'ANY'
@@ -116,7 +118,7 @@ LIMIT                                                             return 'LIMIT'
 "{"                                                               return '{'
 "}"                                                               return '}'
 ";"                                                               return ';'
-                                                                 
+
 ['](\\.|[^'])*[']                                                 return 'STRING'
 ["](\\.|[^"])*["]                                                 return 'STRING'
 [0][x][0-9a-fA-F]+                                                return 'HEX_NUMERIC'
@@ -126,7 +128,7 @@ LIMIT                                                             return 'LIMIT'
 [a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*                  return 'IDENTIFIER'
 \.                                                                return 'DOT'
 ['"][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*["']          return 'QUOTED_IDENTIFIER'
-                                                                 
+
 <<EOF>>                                                           return 'EOF'
 .                                                                 return 'INVALID'
 
@@ -164,7 +166,7 @@ main
   ;
 
 selectClause
-  : SELECT 
+  : SELECT
       distinctOpt
       highPriorityOpt
       maxStateMentTimeOpt
@@ -203,7 +205,7 @@ selectClause
   ;
 
 distinctOpt
-  : ALL { $$ = $1 } 
+  : ALL { $$ = $1 }
   | DISTINCT { $$ = $1 }
   | DISTINCTROW { $$ = $1 }
   | { $$ = null }
@@ -295,6 +297,7 @@ function_call_param
 identifier
   : IDENTIFIER { $$ = { type: 'Identifier', value: $1 } }
   | identifier DOT IDENTIFIER { $$ = $1; $1.value += '.' + $3 }
+  | PREP_TERM { $$ = { type: 'Identifier', value: $1 } }
   ;
 identifier_list
   : identifier { $$ = { type: 'IdentifierList', value: [ $1 ] } }
@@ -336,7 +339,7 @@ simple_expr
   ;
 bit_expr
   : simple_expr { $$ = $1 }
-  | bit_expr '|' bit_expr { $$ = { type: 'BitExpression', operator: '|', left: $1, right: $3 } } 
+  | bit_expr '|' bit_expr { $$ = { type: 'BitExpression', operator: '|', left: $1, right: $3 } }
   | bit_expr '&' bit_expr { $$ = { type: 'BitExpression', operator: '&', left: $1, right: $3 } }
   | bit_expr '<<' bit_expr { $$ = { type: 'BitExpression', operator: '<<', left: $1, right: $3 } }
   | bit_expr '>>' bit_expr { $$ = { type: 'BitExpression', operator: '>>', left: $1, right: $3 } }
@@ -446,6 +449,7 @@ limit
   : LIMIT NUMERIC { $$ = { type: 'Limit', value: [ $2 ] } }
   | LIMIT NUMERIC ',' NUMERIC { $$ = { type: 'Limit', value: [ $2, $4 ] } }
   | LIMIT NUMERIC OFFSET NUMERIC { $$ = { type: 'Limit', value: [ $4, $2 ], offsetMode: true } }
+  | LIMIT PREP_TERM { $$ = { type: 'Limit', value: [ $2 ] } }
   ;
 limit_opt
   : { $$ = null }

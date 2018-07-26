@@ -360,5 +360,7 @@ describe('select grammar support', function () {
     testParser('SELECT COUNT(*) AS total FROM b');
   });
 
+  it ('allow prepared statement prefix ("$" or ":") or plain ?.', function () {
+    testParser('SELECT * FROM b WHERE id=$id OR id=:id ORDER BY ?');
+  });
 });
-
