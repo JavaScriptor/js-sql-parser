@@ -5,7 +5,7 @@
   "main": "./dist/parser/sqlParser.js",
   "scripts": {
     "build": "jison -m js ./src/sqlParser.jison -o ./dist/parser/sqlParser.js && npm run build-concat",
-    "build-concat": "concat -o ./dist/parser/sqlParser.js ./dist/parser/sqlParser.js src/stringify.js src/suffix.js",
+    "build-concat": "cat src/stringify.js src/suffix.js >> ./dist/parser/sqlParser.js",
     "postbuild": "npm run test:build",
     "test:all": "mocha --require babel-register",
     "test:build": "mocha 'test/*.test.js'",

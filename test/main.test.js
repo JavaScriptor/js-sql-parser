@@ -357,7 +357,7 @@ describe('select grammar support', function () {
   });
 
   it ('recognoce alias for sql-function calls in stringify function.', function () {
-    testParser('SELECT COUNT(*) AS total FROM b');
+    testParser('SELECT COUNT(*) AS total, a b, b as c, c/2 d, d & e an FROM b');
   });
 
 });

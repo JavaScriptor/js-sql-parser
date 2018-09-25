@@ -130,11 +130,11 @@ Sql.prototype.travelSelectExpr = function (ast) {
       this.append(exprList[i]);
     } else {
       this.travel(exprList[i]);
-      if (ast.alias) {
-        if (ast.hasAs) {
+      if (exprList[i].alias) {
+        if (exprList[i].hasAs) {
           this.appendKeyword('as');
         }
-        this.travel(ast.alias);
+        this.travel(exprList[i].alias);
       }
     }
     if (i !== exprList.length - 1) {
@@ -184,12 +184,6 @@ Sql.prototype.travelFunctionCall = function (ast) {
     }
   }
   this.append(')', true);
-  if (ast.alias) {
-    if (ast.hasAs) {
-      this.appendKeyword('as');
-    }
-    this.travel(ast.alias);
-  }
 }
 Sql.prototype.travelFunctionCallParam = function (ast) {
   if (ast.distinctOpt) {
@@ -249,12 +243,6 @@ Sql.prototype.travelSubQuery = function (ast) {
   this.append('(', false, true);
   this.travel(ast.value);
   this.append(')', true);
-  if (ast.alias) {
-    if (ast.hasAs) {
-      this.appendKeyword('as');
-    }
-    this.travel(ast.alias);
-  }
 }
 Sql.prototype.travelIdentifierExpr = function (ast) {
   this.append('{');
