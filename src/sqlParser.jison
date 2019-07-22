@@ -171,16 +171,16 @@ semicolonOpt
 
 unionClause
   : unionClauseNotParenthesized { $$ = $1 }
-  | unionClauseParenthesized { $$ = $1 }
+  | unionClauseParenthesized order_by_opt limit_opt { $$ = $1, $$.orderBy = $2, $$.limit = $3; }
   ;
 
 unionClauseParenthesized
-  : selectClauseParenthesized UNION distinctOpt selectClauseParenthesized order_by_opt limit_opt { $$ = { type: 'Union', left: $1, distinctOpt: $3, right: $4, orderBy: $5, limit: $6 }; }
-  | selectClauseParenthesized UNION distinctOpt unionClauseParenthesized order_by_opt limit_opt { $$ = { type: 'Union', left: $1, distinctOpt: $3, right: $4, orderBy: $5, limit: $6 } }
+  : selectClauseParenthesized UNION distinctOpt selectClauseParenthesized { $$ = { type: 'Union', left: $1, distinctOpt: $3, right: $4 }; }
+  | selectClauseParenthesized UNION distinctOpt unionClauseParenthesized { $$ = { type: 'Union', left: $1, distinctOpt: $3, right: $4 }; }
   ;
 
 selectClauseParenthesized
-  : '(' selectClause ')' { $$ = { type: 'SelectParenthesized', value: $2 } }
+  : '(' selectClause ')' { $$ = { type: 'SelectParenthesized', value: $2 }; }
   ;
 
 unionClauseNotParenthesized

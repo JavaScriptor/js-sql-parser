@@ -5,18 +5,19 @@ const parser = require('../');
 
 const testParser = function (sql) {
   let firstAst = parser.parse(sql);
+  debug(JSON.stringify(firstAst, null, 2));
   let firstSql = parser.stringify(firstAst);
+  debug(firstSql);
   let secondAst = parser.parse(firstSql);
+  debug(parser.stringify(secondAst));
   let secondSql = parser.stringify(secondAst);
+  debug(JSON.stringify(secondAst, null, 2));
 
   if (firstSql !== secondSql) {
     console.log('firstSql', firstSql);
     console.log('secondSql', secondSql);
     throw 'err firstSql don\'t equals secondSql. ';
   }
-
-  debug(JSON.stringify(secondAst, null, 2));
-  debug(parser.stringify(secondAst));
 
   return secondAst;
 }
@@ -358,6 +359,22 @@ describe('select grammar support', function () {
 
   it ('recognoce alias for sql-function calls in stringify function.', function () {
     testParser('SELECT COUNT(*) AS total, a b, b as c, c/2 d, d & e an FROM b');
+  });
+
+  it ('union support, https://dev.mysql.com/doc/refman/8.0/en/union.html', function () {
+    testParser('select a from dual union select a from foo;');
+  });
+
+  it ('union Parenthesized support, https://dev.mysql.com/doc/refman/8.0/en/union.html', function () {
+    testParser('(select a from dual) union (select a from foo) order by a desc limit 100, 100;');
+  });
+
+  it ('union all support, https://dev.mysql.com/doc/refman/8.0/en/union.html', function () {
+    testParser('(select a from dual) union all (select a from foo) order by a limit 100');
+  });
+
+  it ('union distinct support, https://dev.mysql.com/doc/refman/8.0/en/union.html', function () {
+    testParser('select a from dual order by a desc limit 1, 1 union distinct select a from foo order by a limit 1');
   });
 
 });

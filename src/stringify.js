@@ -1,3 +1,5 @@
+import { timingSafeEqual } from "crypto";
+
 if (!sqlParser) {
   sqlParser = {};
 }
@@ -55,13 +57,13 @@ Sql.prototype.append = function(word, noPrefix, noSuffix) {
   }
 }
 Sql.prototype.travelMain = function(ast) {
-  this.travelSelect(ast.value);
+  this.travel(ast.value);
   if (ast.hasSemicolon) {
     this.append(';', true);
   }
 }
 Sql.prototype.travelSelect = function(ast) {
-  this.appendKeyword('select', true);
+  this.appendKeyword('select');
   if (ast.distinctOpt) {
     this.appendKeyword(ast.distinctOpt);
   }
@@ -536,4 +538,17 @@ Sql.prototype.travelTableFactor = function (ast) {
   if (ast.indexHintOpt) {
     this.travel(ast.indexHintOpt);
   }
+}
+Sql.prototype.travelUnion = function (ast) {
+  this.travel(ast.left);
+  this.appendKeyword('UNION');
+  if (ast.distinctOpt) {
+    this.appendKeyword(ast.distinctOpt)
+  }
+  this.travel(ast.right);
+}
+Sql.prototype.travelSelectParenthesized = function (ast) {
+  this.appendKeyword('(');
+  this.travel(ast.value);
+  this.appendKeyword(')');
 }
