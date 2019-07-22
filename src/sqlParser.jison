@@ -89,6 +89,7 @@ SHARE                                                             return 'SHARE'
 MODE                                                              return 'MODE'
 OJ                                                                return 'OJ'
 LIMIT                                                             return 'LIMIT'
+UNION                                                             return 'UNION'
 
 ","                                                               return ','
 "="                                                               return '='
@@ -159,8 +160,32 @@ LIMIT                                                             return 'LIMIT'
 %% /* language grammar */
 
 main
-  : selectClause EOF { return {nodeType: 'Main', value: $1}; }
-  | selectClause ';' EOF { return {nodeType: 'Main', value: $1, hasSemicolon: true}; }
+  : selectClause semicolonOpt EOF { return {nodeType: 'Main', value: $1, hasSemicolon: $2}; }
+  | unionClause semicolonOpt EOF { return {nodeType: 'Main', value: $1, hasSemicolon: $2}; }
+  ;
+
+semicolonOpt
+  : ';' { $$ = true }
+  | { $$ = false }
+  ;
+
+unionClause
+  : unionClauseNotParenthesized { $$ = $1 }
+  | unionClauseParenthesized order_by_opt limit_opt { $$ = $1, $$.orderBy = $2, $$.limit = $3; }
+  ;
+
+unionClauseParenthesized
+  : selectClauseParenthesized UNION distinctOpt selectClauseParenthesized { $$ = { type: 'Union', left: $1, distinctOpt: $3, right: $4 }; }
+  | selectClauseParenthesized UNION distinctOpt unionClauseParenthesized { $$ = { type: 'Union', left: $1, distinctOpt: $3, right: $4 }; }
+  ;
+
+selectClauseParenthesized
+  : '(' selectClause ')' { $$ = { type: 'SelectParenthesized', value: $2 }; }
+  ;
+
+unionClauseNotParenthesized
+  : selectClause UNION distinctOpt selectClause { $$ = { type: 'Union', left: $1, distinctOpt: $3, right: $4 } }
+  | selectClause UNION distinctOpt unionClauseNotParenthesized { $$ = { type: 'Union', left: $1, distinctOpt: $3, right: $4 } }
   ;
 
 selectClause
