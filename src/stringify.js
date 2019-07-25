@@ -1,5 +1,3 @@
-import { timingSafeEqual } from "crypto";
-
 if (!sqlParser) {
   sqlParser = {};
 }
