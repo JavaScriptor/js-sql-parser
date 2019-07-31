@@ -387,9 +387,9 @@ Sql.prototype.travelLimit = function (ast) {
     }
   }
 }
-Sql.prototype.travelTableRefrences = function (ast) {
+Sql.prototype.travelTableReferences = function (ast) {
   var list = ast.value;
-  if (ast.TableRefrences) {
+  if (ast.TableReferences) {
     this.append('(', false, true);
   }
   for (var i = 0; i < list.length; i++) {
@@ -398,11 +398,11 @@ Sql.prototype.travelTableRefrences = function (ast) {
       this.append(',', true);
     }
   }
-  if (ast.TableRefrences) {
+  if (ast.TableReferences) {
     this.append(')');
   }
 }
-Sql.prototype.travelTableRefrence = function (ast) {
+Sql.prototype.travelTableReference = function (ast) {
   if (ast.hasOj) {
     this.append('{');
     this.appendKeyword('oj');
