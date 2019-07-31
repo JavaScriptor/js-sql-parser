@@ -490,12 +490,12 @@ for_update_lock_in_share_mode_opt
   ;
 selectDataSetOpt
   : { $$ = {} }
-  | FROM table_refrences partitionOpt where_opt group_by_opt having_opt order_by_opt limit_opt procedure_opt for_update_lock_in_share_mode_opt
+  | FROM table_references partitionOpt where_opt group_by_opt having_opt order_by_opt limit_opt procedure_opt for_update_lock_in_share_mode_opt
     { $$ = { from: $2, partition: $3, where: $4, groupBy: $5, having: $6, orderBy: $7, limit: $8, procedure: $9, updateLockMode: $10 } }
   ;
-table_refrences
+table_references
   : escaped_table_reference { $$ = { type: 'TableReferences', value: [ $1 ] } }
-  | table_refrences ',' escaped_table_reference %prec TABLE_REF_COMMA { $$ = $1; $1.value.push($3); }
+  | table_references ',' escaped_table_reference %prec TABLE_REF_COMMA { $$ = $1; $1.value.push($3); }
   ;
 escaped_table_reference
   : table_reference { $$ = { type: 'TableReference', value: $1 } }
@@ -583,5 +583,5 @@ index_hint
 table_factor
   : identifier partitionOpt aliasOpt index_hint_list_opt { $$ = { type: 'TableFactor', value: $1, partition: $2, alias: $3.alias, hasAs: $3.hasAs, indexHintOpt: $4 } }
   | '(' selectClause ')' aliasOpt { $$ = { type: 'SubQuery', value: $2, alias: $4.alias, hasAs: $4.hasAs } }
-  | '(' table_refrences ')' { $$ = $2; $$.hasParentheses = true }
+  | '(' table_references ')' { $$ = $2; $$.hasParentheses = true }
   ;

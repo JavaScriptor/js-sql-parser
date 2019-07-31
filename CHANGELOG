@@ -1,3 +1,5 @@
 1.0.6 add MIT license.
 1.0.7 fix alias for identifier #16 , pr: #17
 1.0.8 support union grammar follow: https://dev.mysql.com/doc/refman/8.0/en/union.html
+1.1.0 hotfix: Remove unused import
+1.2.0 fix typo "refrence" to "reference" #24
