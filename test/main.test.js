@@ -377,5 +377,7 @@ describe('select grammar support', function () {
     testParser('select a from dual order by a desc limit 1, 1 union distinct select a from foo order by a limit 1');
   });
 
+  it ('allow prepared statement prefix ("$" or ":") or plain ?.', function () {
+    testParser('SELECT * FROM b WHERE id=$id OR id=:id ORDER BY ?');
+  });
 });
-

@@ -14,6 +14,8 @@
 [`][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*[`]            return 'IDENTIFIER'
 [\w]+[\u4e00-\u9fa5]+[0-9a-zA-Z_\u4e00-\u9fa5]*                   return 'IDENTIFIER'
 [\u4e00-\u9fa5][0-9a-zA-Z_\u4e00-\u9fa5]*                         return 'IDENTIFIER'
+[\$:][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*             return 'PREP_TERM'
+[?]                                                               return 'PREP_TERM'
 SELECT                                                            return 'SELECT'
 ALL                                                               return 'ALL'
 ANY                                                               return 'ANY'
@@ -320,6 +322,7 @@ function_call_param
 identifier
   : IDENTIFIER { $$ = { type: 'Identifier', value: $1 } }
   | identifier DOT IDENTIFIER { $$ = $1; $1.value += '.' + $3 }
+  | PREP_TERM { $$ = { type: 'Identifier', value: $1 } }
   ;
 identifier_list
   : identifier { $$ = { type: 'IdentifierList', value: [ $1 ] } }
@@ -471,6 +474,7 @@ limit
   : LIMIT NUMERIC { $$ = { type: 'Limit', value: [ $2 ] } }
   | LIMIT NUMERIC ',' NUMERIC { $$ = { type: 'Limit', value: [ $2, $4 ] } }
   | LIMIT NUMERIC OFFSET NUMERIC { $$ = { type: 'Limit', value: [ $4, $2 ], offsetMode: true } }
+  | LIMIT PREP_TERM { $$ = { type: 'Limit', value: [ $2 ] } }
   ;
 limit_opt
   : { $$ = null }
