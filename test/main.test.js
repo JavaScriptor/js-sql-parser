@@ -377,5 +377,37 @@ describe('select grammar support', function () {
     testParser('select a from dual order by a desc limit 1, 1 union distinct select a from foo order by a limit 1');
   });
 
+  it ('intersect support', function () {
+    testParser('select a from dual intersect select a from foo;');
+  });
+
+  it ('intersect Parenthesized support', function () {
+    testParser('(select a from dual) intersect (select a from foo) order by a desc limit 100, 100;');
+  });
+
+  it ('intersect all support', function () {
+    testParser('(select a from dual) intersect all (select a from foo) order by a limit 100');
+  });
+
+  it ('intersect distinct support', function () {
+    testParser('select a from dual order by a desc limit 1, 1 intersect distinct select a from foo order by a limit 1');
+  });
+
+  it ('except support', function () {
+    testParser('select a from dual except select a from foo;');
+  });
+
+  it ('except Parenthesized support', function () {
+    testParser('(select a from dual) except (select a from foo) order by a desc limit 100, 100;');
+  });
+
+  it ('except all support', function () {
+    testParser('(select a from dual) except all (select a from foo) order by a limit 100');
+  });
+
+  it ('except distinct support', function () {
+    testParser('select a from dual order by a desc limit 1, 1 except distinct select a from foo order by a limit 1');
+  });
+
 });
 

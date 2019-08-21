@@ -90,6 +90,8 @@ MODE                                                              return 'MODE'
 OJ                                                                return 'OJ'
 LIMIT                                                             return 'LIMIT'
 UNION                                                             return 'UNION'
+INTERSECT                                                         return 'INTERSECT'
+EXCEPT                                                            return 'EXCEPT'
 
 ","                                                               return ','
 "="                                                               return '='
@@ -161,7 +163,7 @@ UNION                                                             return 'UNION'
 
 main
   : selectClause semicolonOpt EOF { return {nodeType: 'Main', value: $1, hasSemicolon: $2}; }
-  | unionClause semicolonOpt EOF { return {nodeType: 'Main', value: $1, hasSemicolon: $2}; }
+  | setClause semicolonOpt EOF { return {nodeType: 'Main', value: $1, hasSemicolon: $2}; }
   ;
 
 semicolonOpt
@@ -169,23 +171,28 @@ semicolonOpt
   | { $$ = false }
   ;
 
-unionClause
-  : unionClauseNotParenthesized { $$ = $1 }
-  | unionClauseParenthesized order_by_opt limit_opt { $$ = $1, $$.orderBy = $2, $$.limit = $3; }
+setOperation
+  : UNION
+  | INTERSECT
+  | EXCEPT;
+
+setClause
+  : setClauseNotParenthesized { $$ = $1 }
+  | setClauseParenthesized order_by_opt limit_opt { $$ = $1, $$.orderBy = $2, $$.limit = $3; }
   ;
 
-unionClauseParenthesized
-  : selectClauseParenthesized UNION distinctOpt selectClauseParenthesized { $$ = { type: 'Union', left: $1, distinctOpt: $3, right: $4 }; }
-  | selectClauseParenthesized UNION distinctOpt unionClauseParenthesized { $$ = { type: 'Union', left: $1, distinctOpt: $3, right: $4 }; }
+setClauseParenthesized
+  : selectClauseParenthesized setOperation distinctOpt selectClauseParenthesized { $$ = { type: $2.charAt(0).toUpperCase() + $2.substr(1).toLowerCase(), left: $1, distinctOpt: $3, right: $4 }; }
+  | selectClauseParenthesized setOperation distinctOpt setClauseParenthesized { $$ = { type: $2.charAt(0).toUpperCase() + $2.substr(1).toLowerCase(), left: $1, distinctOpt: $3, right: $4 }; }
   ;
 
 selectClauseParenthesized
   : '(' selectClause ')' { $$ = { type: 'SelectParenthesized', value: $2 }; }
   ;
 
-unionClauseNotParenthesized
-  : selectClause UNION distinctOpt selectClause { $$ = { type: 'Union', left: $1, distinctOpt: $3, right: $4 } }
-  | selectClause UNION distinctOpt unionClauseNotParenthesized { $$ = { type: 'Union', left: $1, distinctOpt: $3, right: $4 } }
+setClauseNotParenthesized
+  : selectClause setOperation distinctOpt selectClause { $$ = { type: $2.charAt(0).toUpperCase() + $2.substr(1).toLowerCase(), left: $1, distinctOpt: $3, right: $4 } }
+  | selectClause setOperation distinctOpt setClauseNotParenthesized { $$ = { type: $2.charAt(0).toUpperCase() + $2.substr(1).toLowerCase(), left: $1, distinctOpt: $3, right: $4 } }
   ;
 
 selectClause

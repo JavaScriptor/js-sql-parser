@@ -545,6 +545,22 @@ Sql.prototype.travelUnion = function (ast) {
   }
   this.travel(ast.right);
 }
+Sql.prototype.travelIntersect = function (ast) {
+  this.travel(ast.left);
+  this.appendKeyword('INTERSECT');
+  if (ast.distinctOpt) {
+    this.appendKeyword(ast.distinctOpt)
+  }
+  this.travel(ast.right);
+}
+Sql.prototype.travelExcept = function (ast) {
+  this.travel(ast.left);
+  this.appendKeyword('EXCEPT');
+  if (ast.distinctOpt) {
+    this.appendKeyword(ast.distinctOpt)
+  }
+  this.travel(ast.right);
+}
 Sql.prototype.travelSelectParenthesized = function (ast) {
   this.appendKeyword('(');
   this.travel(ast.value);
