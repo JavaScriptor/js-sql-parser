@@ -6,13 +6,13 @@ function Sql() {
   this.buffer = '';
 }
 
-sqlParser.stringify = function (ast) {
+sqlParser.stringify = function(ast) {
   var sql = new Sql();
   sql.travelMain(ast);
   return sql.buffer;
-}
+};
 
-Sql.prototype.travel = function (ast) {
+Sql.prototype.travel = function(ast) {
   if (!ast) return;
 
   if (typeof ast === 'string') {
@@ -21,7 +21,7 @@ Sql.prototype.travel = function (ast) {
 
   var processor = this['travel' + ast.type];
   processor.call(this, ast);
-}
+};
 
 var noSuffixFlag = false;
 Sql.prototype.appendKeyword = function(keyword, noPrefix, noSuffix) {
@@ -38,7 +38,7 @@ Sql.prototype.appendKeyword = function(keyword, noPrefix, noSuffix) {
   if (noSuffix) {
     noSuffixFlag = true;
   }
-}
+};
 Sql.prototype.append = function(word, noPrefix, noSuffix) {
   if (noSuffixFlag) {
     noPrefix = true;
@@ -53,13 +53,13 @@ Sql.prototype.append = function(word, noPrefix, noSuffix) {
   if (noSuffix) {
     noSuffixFlag = true;
   }
-}
+};
 Sql.prototype.travelMain = function(ast) {
   this.travel(ast.value);
   if (ast.hasSemicolon) {
     this.append(';', true);
   }
-}
+};
 Sql.prototype.travelSelect = function(ast) {
   this.appendKeyword('select');
   if (ast.distinctOpt) {
@@ -107,6 +107,7 @@ Sql.prototype.travelSelect = function(ast) {
     this.travel(ast.groupBy);
   }
   if (ast.having) {
+    this.appendKeyword('having');
     this.travel(ast.having);
   }
   if (ast.orderBy) {
@@ -122,8 +123,8 @@ Sql.prototype.travelSelect = function(ast) {
   if (ast.updateLockMode) {
     this.appendKeyword(ast.updateLockMode);
   }
-}
-Sql.prototype.travelSelectExpr = function (ast) {
+};
+Sql.prototype.travelSelectExpr = function(ast) {
   var exprList = ast.value;
   for (var i = 0; i < exprList.length; i++) {
     if (typeof ast === 'string') {
@@ -141,69 +142,69 @@ Sql.prototype.travelSelectExpr = function (ast) {
       this.append(',', true);
     }
   }
-}
-Sql.prototype.travelIsExpression = function (ast) {
+};
+Sql.prototype.travelIsExpression = function(ast) {
   this.travel(ast.left);
   this.appendKeyword('in');
   if (ast.hasNot) {
     this.appendKeyword('not');
   }
   this.append(ast.right);
-}
-Sql.prototype.travelNotExpression = function (ast) {
+};
+Sql.prototype.travelNotExpression = function(ast) {
   this.appendKeyword('not');
   this.travel(ast.value);
-}
-Sql.prototype.travelOrExpression =
-Sql.prototype.travelAndExpression =
-Sql.prototype.travelXORExpression = function (ast) {
+};
+Sql.prototype.travelOrExpression = Sql.prototype.travelAndExpression = Sql.prototype.travelXORExpression = function(
+  ast
+) {
   this.travel(ast.left);
   this.appendKeyword(ast.operator);
   this.travel(ast.right);
-}
-Sql.prototype.travelNull =
-Sql.prototype.travelBoolean =
-Sql.prototype.travelBooleanExtra = function (ast) {
+};
+Sql.prototype.travelNull = Sql.prototype.travelBoolean = Sql.prototype.travelBooleanExtra = function(
+  ast
+) {
   this.appendKeyword(ast.value);
-}
-Sql.prototype.travelNumber = function (ast) {
+};
+Sql.prototype.travelNumber = function(ast) {
   this.append(ast.value);
-}
-Sql.prototype.travelString = function (ast) {
+};
+Sql.prototype.travelString = function(ast) {
   this.append(ast.value);
-}
-Sql.prototype.travelFunctionCall = function (ast) {
+};
+Sql.prototype.travelFunctionCall = function(ast) {
   this.append(ast.name);
   this.append('(', true, true);
   var params = ast.params;
   for (var i = 0; i < params.length; i++) {
     var param = params[i];
     this.travel(param);
-    if (i !== params.length -1) {
+    if (i !== params.length - 1) {
       this.append(',', true);
     }
   }
   this.append(')', true);
-}
-Sql.prototype.travelFunctionCallParam = function (ast) {
+};
+Sql.prototype.travelFunctionCallParam = function(ast) {
   if (ast.distinctOpt) {
     this.appendKeyword(ast.distinctOpt);
   }
   this.travel(ast.value);
-}
-Sql.prototype.travelIdentifier = function (ast) {
+};
+Sql.prototype.travelIdentifier = function(ast) {
   this.append(ast.value);
-}
-Sql.prototype.travelIdentifierList = function (ast) {
+};
+Sql.prototype.travelIdentifierList = function(ast) {
   var list = ast.value;
   for (var i = 0; i < list.length; i++) {
     this.travel(list[i]);
-    if (i !== list.length -1) {
+    if (i !== list.length - 1) {
       this.append(',', true);
     }
   }
-}
-Sql.prototype.travelWhenThenList = function (ast) {
+};
+Sql.prototype.travelWhenThenList = function(ast) {
   var list = ast.value;
   for (var i = 0; i < list.length; i++) {
     this.appendKeyword('when');
@@ -211,8 +212,8 @@ Sql.prototype.travelWhenThenList = function (ast) {
     this.appendKeyword('then');
     this.travel(list[i].then);
   }
-}
-Sql.prototype.travelCaseWhen = function (ast) {
+};
+Sql.prototype.travelCaseWhen = function(ast) {
   this.appendKeyword('case');
   if (ast.caseExprOpt) {
     this.travel(ast.caseExprOpt);
@@ -223,39 +224,39 @@ Sql.prototype.travelCaseWhen = function (ast) {
     this.travel(ast.else);
   }
   this.appendKeyword('end');
-}
-Sql.prototype.travelPrefix = function (ast) {
+};
+Sql.prototype.travelPrefix = function(ast) {
   this.appendKeyword(ast.prefix);
   this.travel(ast.value);
-}
-Sql.prototype.travelSimpleExprParentheses = function (ast) {
+};
+Sql.prototype.travelSimpleExprParentheses = function(ast) {
   if (ast.hasRow) {
     this.appendKeyword('row');
   }
   this.append('(', false, true);
   this.travel(ast.value);
   this.append(')', true);
-}
-Sql.prototype.travelSubQuery = function (ast) {
+};
+Sql.prototype.travelSubQuery = function(ast) {
   if (ast.hasExists) {
     this.appendKeyword('exists');
   }
   this.append('(', false, true);
   this.travel(ast.value);
   this.append(')', true);
-}
-Sql.prototype.travelIdentifierExpr = function (ast) {
+};
+Sql.prototype.travelIdentifierExpr = function(ast) {
   this.append('{');
   this.travel(ast.identifier);
   this.travel(ast.value);
   this.append('}');
-}
-Sql.prototype.travelBitExpression = function (ast) {
+};
+Sql.prototype.travelBitExpression = function(ast) {
   this.travel(ast.left);
   this.appendKeyword(ast.operator);
   this.travel(ast.right);
-}
-Sql.prototype.travelInSubQueryPredicate = function (ast) {
+};
+Sql.prototype.travelInSubQueryPredicate = function(ast) {
   this.travel(ast.left);
   if (ast.hasNot) {
     this.appendKeyword('not');
@@ -264,8 +265,8 @@ Sql.prototype.travelInSubQueryPredicate = function (ast) {
   this.append('(', false, true);
   this.travel(ast.right);
   this.append(')');
-}
-Sql.prototype.travelInExpressionListPredicate = function (ast) {
+};
+Sql.prototype.travelInExpressionListPredicate = function(ast) {
   this.travel(ast.left);
   if (ast.hasNot) {
     this.appendKeyword('not');
@@ -274,8 +275,8 @@ Sql.prototype.travelInExpressionListPredicate = function (ast) {
   this.append('(', false, true);
   this.travel(ast.right);
   this.append(')');
-}
-Sql.prototype.travelBetweenPredicate = function (ast) {
+};
+Sql.prototype.travelBetweenPredicate = function(ast) {
   this.travel(ast.left);
   if (ast.hasNot) {
     this.appendKeyword('not');
@@ -284,14 +285,14 @@ Sql.prototype.travelBetweenPredicate = function (ast) {
   this.travel(ast.right.left);
   this.appendKeyword('and');
   this.travel(ast.right.right);
-}
-Sql.prototype.travelSoundsLikePredicate = function (ast) {
+};
+Sql.prototype.travelSoundsLikePredicate = function(ast) {
   this.travel(ast.left);
   this.appendKeyword('sounds');
   this.appendKeyword('like');
   this.travel(ast.right);
-}
-Sql.prototype.travelLikePredicate = function (ast) {
+};
+Sql.prototype.travelLikePredicate = function(ast) {
   this.travel(ast.left);
   if (ast.hasNot) {
     this.appendKeyword('not');
@@ -299,40 +300,40 @@ Sql.prototype.travelLikePredicate = function (ast) {
   this.appendKeyword('like');
   this.travel(ast.right);
   if (ast.escape) {
-    this.appendKeyword('escape')
+    this.appendKeyword('escape');
     this.travel(ast.escape);
   }
-}
-Sql.prototype.travelRegexpPredicate = function (ast) {
+};
+Sql.prototype.travelRegexpPredicate = function(ast) {
   this.travel(ast.left);
   if (ast.hasNot) {
     this.appendKeyword('not');
   }
   this.appendKeyword('regexp');
   this.travel(ast.right);
-}
-Sql.prototype.travelIsNullBooleanPrimary = function (ast) {
+};
+Sql.prototype.travelIsNullBooleanPrimary = function(ast) {
   this.travel(ast.value);
   this.appendKeyword('is');
   if (ast.hasNot) {
     this.appendKeyword('not');
   }
   this.appendKeyword('null');
-}
-Sql.prototype.travelComparisonBooleanPrimary = function (ast) {
+};
+Sql.prototype.travelComparisonBooleanPrimary = function(ast) {
   this.travel(ast.left);
   this.append(ast.operator);
   this.travel(ast.right);
-}
-Sql.prototype.travelComparisonSubQueryBooleanPrimary = function (ast) {
+};
+Sql.prototype.travelComparisonSubQueryBooleanPrimary = function(ast) {
   this.travel(ast.left);
   this.append(ast.operator);
   this.appendKeyword(ast.subQueryOpt);
   this.append('(', false, true);
   this.travel(ast.right);
   this.append(')');
-}
-Sql.prototype.travelExpressionList = function (ast) {
+};
+Sql.prototype.travelExpressionList = function(ast) {
   var list = ast.value;
   for (var i = 0; i < list.length; i++) {
     this.travel(list[i]);
@@ -340,8 +341,8 @@ Sql.prototype.travelExpressionList = function (ast) {
       this.append(',', true);
     }
   }
-}
-Sql.prototype.travelGroupBy = function (ast) {
+};
+Sql.prototype.travelGroupBy = function(ast) {
   this.appendKeyword('group by');
   var list = ast.value;
   for (var i = 0; i < list.length; i++) {
@@ -350,8 +351,8 @@ Sql.prototype.travelGroupBy = function (ast) {
       this.append(',', true);
     }
   }
-}
-Sql.prototype.travelOrderBy = function (ast) {
+};
+Sql.prototype.travelOrderBy = function(ast) {
   this.appendKeyword('order by');
   var list = ast.value;
   for (var i = 0; i < list.length; i++) {
@@ -363,14 +364,14 @@ Sql.prototype.travelOrderBy = function (ast) {
   if (ast.rollUp) {
     this.appendKeyword('with rollup');
   }
-}
-Sql.prototype.travelGroupByOrderByItem = function (ast) {
+};
+Sql.prototype.travelGroupByOrderByItem = function(ast) {
   this.travel(ast.value);
   if (ast.sortOpt) {
     this.appendKeyword(ast.sortOpt);
   }
-}
-Sql.prototype.travelLimit = function (ast) {
+};
+Sql.prototype.travelLimit = function(ast) {
   this.appendKeyword('limit');
   var list = ast.value;
   if (list.length === 1) {
@@ -386,8 +387,8 @@ Sql.prototype.travelLimit = function (ast) {
       this.append(list[1]);
     }
   }
-}
-Sql.prototype.travelTableReferences = function (ast) {
+};
+Sql.prototype.travelTableReferences = function(ast) {
   var list = ast.value;
   if (ast.TableReferences) {
     this.append('(', false, true);
@@ -401,8 +402,8 @@ Sql.prototype.travelTableReferences = function (ast) {
   if (ast.TableReferences) {
     this.append(')');
   }
-}
-Sql.prototype.travelTableReference = function (ast) {
+};
+Sql.prototype.travelTableReference = function(ast) {
   if (ast.hasOj) {
     this.append('{');
     this.appendKeyword('oj');
@@ -411,8 +412,8 @@ Sql.prototype.travelTableReference = function (ast) {
   } else {
     this.travel(ast.value);
   }
-}
-Sql.prototype.travelInnerCrossJoinTable = function (ast) {
+};
+Sql.prototype.travelInnerCrossJoinTable = function(ast) {
   this.travel(ast.left);
   if (ast.innerCrossOpt) {
     this.appendKeyword(ast.innerCrossOpt);
@@ -422,14 +423,14 @@ Sql.prototype.travelInnerCrossJoinTable = function (ast) {
   if (ast.condition) {
     this.travel(ast.condition);
   }
-}
-Sql.prototype.travelStraightJoinTable = function (ast) {
+};
+Sql.prototype.travelStraightJoinTable = function(ast) {
   this.travel(ast.left);
   this.appendKeyword('straight_join');
   this.travel(ast.right);
   this.travel(ast.condition);
-}
-Sql.prototype.travelLeftRightJoinTable = function (ast) {
+};
+Sql.prototype.travelLeftRightJoinTable = function(ast) {
   this.travel(ast.left);
   this.appendKeyword(ast.leftRight);
   if (ast.outOpt) {
@@ -438,8 +439,8 @@ Sql.prototype.travelLeftRightJoinTable = function (ast) {
   this.appendKeyword('join');
   this.travel(ast.right);
   this.travel(ast.condition);
-}
-Sql.prototype.travelNaturalJoinTable = function (ast) {
+};
+Sql.prototype.travelNaturalJoinTable = function(ast) {
   this.travel(ast.left);
   this.appendKeyword('natural');
   if (ast.leftRight) {
@@ -450,18 +451,18 @@ Sql.prototype.travelNaturalJoinTable = function (ast) {
   }
   this.appendKeyword('join');
   this.travel(ast.right);
-}
-Sql.prototype.travelOnJoinCondition = function (ast) {
+};
+Sql.prototype.travelOnJoinCondition = function(ast) {
   this.appendKeyword('on');
   this.travel(ast.value);
-}
-Sql.prototype.travelUsingJoinCondition = function (ast) {
+};
+Sql.prototype.travelUsingJoinCondition = function(ast) {
   this.appendKeyword('using');
   this.appendKeyword('(', false, true);
   this.travel(ast.value);
   this.appendKeyword(')');
-}
-Sql.prototype.travelPartitions = function (ast) {
+};
+Sql.prototype.travelPartitions = function(ast) {
   this.appendKeyword('partition');
   this.appendKeyword('(', false, true);
   var list = ast.value;
@@ -472,12 +473,12 @@ Sql.prototype.travelPartitions = function (ast) {
     }
   }
   this.appendKeyword(')');
-}
-Sql.prototype.travelForOptIndexHint = function (ast) {
+};
+Sql.prototype.travelForOptIndexHint = function(ast) {
   this.appendKeyword('for');
   this.appendKeyword(ast.value);
-}
-Sql.prototype.travelIndexList = function (ast) {
+};
+Sql.prototype.travelIndexList = function(ast) {
   var list = ast.value;
   for (var i = 0; i < list.length; i++) {
     this.travel(list[i]);
@@ -485,8 +486,8 @@ Sql.prototype.travelIndexList = function (ast) {
       this.append(',', true);
     }
   }
-}
-Sql.prototype.travelUseIndexHint = function (ast) {
+};
+Sql.prototype.travelUseIndexHint = function(ast) {
   this.appendKeyword('use');
   this.appendKeyword(ast.indexOrKey);
   if (ast.forOpt) {
@@ -497,8 +498,8 @@ Sql.prototype.travelUseIndexHint = function (ast) {
     this.travel(ast.value);
   }
   this.appendKeyword(')');
-}
-Sql.prototype.travelIgnoreIndexHint = function (ast) {
+};
+Sql.prototype.travelIgnoreIndexHint = function(ast) {
   this.appendKeyword('ignore');
   this.appendKeyword(ast.indexOrKey);
   if (ast.forOpt) {
@@ -509,8 +510,8 @@ Sql.prototype.travelIgnoreIndexHint = function (ast) {
     this.travel(ast.value);
   }
   this.appendKeyword(')');
-}
-Sql.prototype.travelForceIndexHint = function (ast) {
+};
+Sql.prototype.travelForceIndexHint = function(ast) {
   this.appendKeyword('force');
   this.appendKeyword(ast.indexOrKey);
   if (ast.forOpt) {
@@ -521,8 +522,8 @@ Sql.prototype.travelForceIndexHint = function (ast) {
     this.travel(ast.value);
   }
   this.appendKeyword(')');
-}
-Sql.prototype.travelTableFactor = function (ast) {
+};
+Sql.prototype.travelTableFactor = function(ast) {
   this.travel(ast.value);
   if (ast.partition) {
     this.travel(ast.partition);
@@ -536,17 +537,17 @@ Sql.prototype.travelTableFactor = function (ast) {
   if (ast.indexHintOpt) {
     this.travel(ast.indexHintOpt);
   }
-}
-Sql.prototype.travelUnion = function (ast) {
+};
+Sql.prototype.travelUnion = function(ast) {
   this.travel(ast.left);
   this.appendKeyword('UNION');
   if (ast.distinctOpt) {
-    this.appendKeyword(ast.distinctOpt)
+    this.appendKeyword(ast.distinctOpt);
   }
   this.travel(ast.right);
-}
-Sql.prototype.travelSelectParenthesized = function (ast) {
+};
+Sql.prototype.travelSelectParenthesized = function(ast) {
   this.appendKeyword('(');
   this.travel(ast.value);
   this.appendKeyword(')');
-}
+};
