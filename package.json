@@ -5,11 +5,11 @@
   "main": "./dist/parser/sqlParser.js",
   "scripts": {
     "build": "jison -m js ./src/sqlParser.jison -o ./dist/parser/sqlParser.js && npm run build-concat",
-    "build-concat": "cat src/stringify.js src/suffix.js >> ./dist/parser/sqlParser.js",
+    "build-concat": "minicat src/stringify.js src/suffix.js >> dist/parser/sqlParser.js",
     "postbuild": "npm run test:build",
     "test": "npm run build",
     "test:all": "mocha --require babel-register",
-    "test:build": "mocha --require babel-register 'test/*.test.js'",
+    "test:build": "mocha --require babel-register test/*.test.js",
     "test:benchmark": "mocha --require babel-register test/benchmark.js"
   },
   "repository": {
@@ -33,6 +33,7 @@
     "concat": "^1.0.3",
     "debug": "^3.1.0",
     "jison": "^0.4.17",
+    "minicat": "^1.0.0",
     "mocha": "^3.2.0"
   }
 }
