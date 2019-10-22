@@ -377,5 +377,9 @@ describe('select grammar support', function () {
     testParser('select a from dual order by a desc limit 1, 1 union distinct select a from foo order by a limit 1');
   });
 
+  it ('fix having', function () {
+    testParser('select a, count(*) cnt from b group by a having count(*) > 1;');
+  });
+
 });
 

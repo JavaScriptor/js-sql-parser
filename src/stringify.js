@@ -107,6 +107,7 @@ Sql.prototype.travelSelect = function(ast) {
     this.travel(ast.groupBy);
   }
   if (ast.having) {
+    this.appendKeyword('having');
     this.travel(ast.having);
   }
   if (ast.orderBy) {
