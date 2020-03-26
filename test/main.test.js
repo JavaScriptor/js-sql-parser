@@ -387,4 +387,14 @@ describe('select grammar support', function() {
       'select a from dual order by a desc limit 1, 1 union distinct select a from foo order by a limit 1'
     );
   });
+
+  it('support quoted alias', function() {
+    testParser('select a as `A-A` from b limit 2;');
+    testParser('select a as `A#A` from b limit 2;');
+    testParser('select a as `A?A` from b limit 2;');
+    testParser('select a as `A/B` from b limit 2;');
+    testParser('select a as `A.A` from b limit 2;');
+    testParser('select a as `A|A` from b limit 2;');
+    testParser('select a as `A A` from b limit 2;');
+  });
 });
