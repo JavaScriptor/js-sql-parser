@@ -12,6 +12,7 @@ sql grammar follows https://dev.mysql.com/doc/refman/5.7/en/select.html
 
 - Typo 'refrence' has been fixed to 'reference' since v1.2.0.
 - Fix bug stringify keyword `having` since v1.2.1. [#29](https://github.com/JavaScriptor/js-sql-parser/issues/29)
+- Add support for "`" quoted alias since v1.2.2. [#33](https://github.com/JavaScriptor/js-sql-parser/issues/33)
 
 for more changes see [CHANGELOG](./CHANGELOG)
 
