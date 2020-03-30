@@ -11,6 +11,4 @@ node_js:
   - "v6.9.1"
   - "v8.11.3"
   - "v10.7.0"
-scripts: {
-  "test": "npm test"
-}
+script: npm run test:build
