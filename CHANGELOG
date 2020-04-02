@@ -7,3 +7,4 @@
 1.2.0 fix typo "refrence" to "reference" #24
 1.2.1 fix stringify having #29 , pr: #28
 1.2.2 feat: add support for "`" quoted alias, pr: #33
+1.3.0 fix tableFactor alias bug. AST changed in tableFactor. #34
