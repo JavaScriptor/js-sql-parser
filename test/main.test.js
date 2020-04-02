@@ -397,4 +397,18 @@ describe('select grammar support', function() {
     testParser('select a as `A|A` from b limit 2;');
     testParser('select a as `A A` from b limit 2;');
   });
+
+  it('bugfix table alias', function() {
+    testParser(`
+    SELECT stime, A.names, B.names FROM (
+      SELECT stime, names FROM iaas_data.iaas_d3c0d0681cc1900
+    ) AS A LEFT JOIN (
+      SELECT stime, names FROM iaas_data.iaas_1071f89feaa0e100
+    ) AS B ON A.stime = B.stime
+    `);
+  });
+
+  it('bugfix table alias2', function() {
+    testParser('select a.* from a t1 join b t2 on t1.a = t2.a')
+  })
 });
