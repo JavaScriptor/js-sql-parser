@@ -127,7 +127,7 @@ UNION                                                             return 'UNION'
 [a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*                  return 'IDENTIFIER'
 \.                                                                return 'DOT'
 ['"][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*["']          return 'QUOTED_IDENTIFIER'
-[`].+[`]                                                          return 'QUOTED_IDENTIFIER'
+([`])(?:(?=(\\?))\2.)*?\1                                         return 'QUOTED_IDENTIFIER'
 
 <<EOF>>                                                           return 'EOF'
 .                                                                 return 'INVALID'
@@ -285,8 +285,7 @@ selectExprAliasOpt
   ;
 
 string
-  : QUOTED_IDENTIFIER { $$ = { type: 'String', value: $1 } }
-  | STRING { $$ = { type: 'String', value: $1 } }
+  : STRING { $$ = { type: 'String', value: $1 } }
   ;
 number
   : NUMERIC { $$ = { type: 'Number', value: $1 } }
@@ -328,6 +327,14 @@ identifier_list
   : identifier { $$ = { type: 'IdentifierList', value: [ $1 ] } }
   | identifier_list ',' identifier { $$ = $1; $1.value.push($3); }
   ;
+quoted_identifier
+  : QUOTED_IDENTIFIER { $$ = { type: 'Identifier', value: $1 } }
+  | quoted_identifier DOT QUOTED_IDENTIFIER { $$ = $1; $1.value += '.' + $3 }
+  ;
+quoted_identifier_list
+  : quoted_identifier { $$ = { type: 'IdentifierList', value: [ $1 ] } }
+  | quoted_identifier_list ',' quoted_identifier { $$ = $1; $1.value.push($3); }
+  ;
 case_expr_opt
   : { $$ = null }
   | expr { $$ = $1 }
@@ -353,6 +360,7 @@ simple_expr_prefix
 simple_expr
   : literal { $$ = $1 }
   | identifier { $$ = $1 }
+  | quoted_identifier { $$ = $1 }
   | function_call { $$ = $1 }
   | simple_expr_prefix { $$ = $1 }
   | '(' expr_list ')' { $$ = { type: 'SimpleExprParentheses', value: $2 } }
