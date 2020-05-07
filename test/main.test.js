@@ -3,7 +3,7 @@
 const debug = require('debug')('js-sql-parser');
 const parser = require('../');
 
-const testParser = function(sql) {
+const testParser = function (sql) {
   let firstAst = parser.parse(sql);
   debug(JSON.stringify(firstAst, null, 2));
   let firstSql = parser.stringify(firstAst);
@@ -22,24 +22,24 @@ const testParser = function(sql) {
   return secondAst;
 };
 
-describe('select grammar support', function() {
-  it('test0', function() {
+describe('select grammar support', function () {
+  it('test0', function () {
     testParser('select a from b where c > 1 group by d order by e desc;');
   });
 
-  it('test1', function() {
+  it('test1', function () {
     testParser('select distinct max_statement_time = 1.2 a ');
   });
 
-  it('test2', function() {
+  it('test2', function () {
     testParser('select all 0x1f');
   });
 
-  it('test3', function() {
+  it('test3', function () {
     testParser('select distinctrow "xx", a in (1,2)');
   });
 
-  it('test4', function() {
+  it('test4', function () {
     testParser(`
       select
         tag_basic.gender as gender,
@@ -58,17 +58,17 @@ describe('select grammar support', function() {
     `);
   });
 
-  it('test5', function() {
+  it('test5', function () {
     testParser('select function(), function(1, "sd", 0x1F)');
   });
 
-  it('test6 unicode', function() {
+  it('test6 unicode', function () {
     testParser(`
       select in中文 from tags
     `);
   });
 
-  it('test7', function() {
+  it('test7', function () {
     testParser(`
       SELECT 
         DISTINCT high_priority MAX_STATEMENT_TIME=1 STRAIGHT_JOIN SQL_SMALL_RESULT SQL_BIG_RESULT SQL_BUFFER_RESULT SQL_CACHE SQL_CALC_FOUND_ROWS fm_customer.lname AS name1,
@@ -89,7 +89,7 @@ describe('select grammar support', function() {
     `);
   });
 
-  it('test8', function() {
+  it('test8', function () {
     testParser(`
       SELECT   P1.PAYMENTNO, P1.AMOUNT,
       (P1.AMOUNT * 100) / SUM(P2.AMOUNT)
@@ -99,7 +99,7 @@ describe('select grammar support', function() {
     `);
   });
 
-  it('test9', function() {
+  it('test9', function () {
     testParser(`
         SELECT  PLAYERS.PLAYERNO, NAME,
        (SELECT   COUNT(*)
@@ -114,7 +114,7 @@ describe('select grammar support', function() {
     `);
   });
 
-  it('test10', function() {
+  it('test10', function () {
     testParser(`
       SELECT rd.*, rd.rd_numberofrooms - (
         SELECT SUM(rn.reservation_numberofrooms) AS count_reserve_room
@@ -148,11 +148,11 @@ describe('select grammar support', function() {
     `);
   });
 
-  it('test11 SELECT `LEFT`(a, 3) FROM b support.', function() {
+  it('test11 SELECT `LEFT`(a, 3) FROM b support.', function () {
     testParser('SELECT `LEFT`(a, 3) FROM b');
   });
 
-  it('test12', function() {
+  it('test12', function () {
     testParser(`
       select
           a.product_id,
@@ -202,7 +202,7 @@ describe('select grammar support', function() {
     `);
   });
 
-  it('test13', function() {
+  it('test13', function () {
     testParser(`
       SELECT
           a.*, f.ORG_NAME DEPT_NAME,
@@ -286,7 +286,7 @@ describe('select grammar support', function() {
     `);
   });
 
-  it('test14', function() {
+  it('test14', function () {
     testParser(`
       SELECT
           k.*,
@@ -345,7 +345,7 @@ describe('select grammar support', function() {
     `);
   });
 
-  it('test15', function() {
+  it('test15', function () {
     testParser(`
       SELECT   P1.PAYMENTNO, P1.AMOUNT, (P1.AMOUNT * 100) / SUM(P2.AMOUNT)
       FROM     PENALTIES AS P1, PENALTIES AS P2
@@ -354,41 +354,41 @@ describe('select grammar support', function() {
     `);
   });
 
-  it('limit support.', function() {
+  it('limit support.', function () {
     testParser('select a from b limit 2, 3');
   });
 
-  it('fix not equal.', function() {
+  it('fix not equal.', function () {
     testParser('select a from b where a <> 1 limit 2, 3');
   });
 
-  it('restore semicolon.', function() {
+  it('restore semicolon.', function () {
     testParser('select a from b limit 2;');
   });
 
-  it('recognoce alias for sql-function calls in stringify function.', function() {
+  it('recognoce alias for sql-function calls in stringify function.', function () {
     testParser('SELECT COUNT(*) AS total, a b, b as c, c/2 d, d & e an FROM b');
   });
 
-  it('union support, https://dev.mysql.com/doc/refman/8.0/en/union.html', function() {
+  it('union support, https://dev.mysql.com/doc/refman/8.0/en/union.html', function () {
     testParser('select a from dual union select a from foo;');
   });
 
-  it('union Parenthesized support, https://dev.mysql.com/doc/refman/8.0/en/union.html', function() {
+  it('union Parenthesized support, https://dev.mysql.com/doc/refman/8.0/en/union.html', function () {
     testParser('(select a from dual) union (select a from foo) order by a desc limit 100, 100;');
   });
 
-  it('union all support, https://dev.mysql.com/doc/refman/8.0/en/union.html', function() {
+  it('union all support, https://dev.mysql.com/doc/refman/8.0/en/union.html', function () {
     testParser('(select a from dual) union all (select a from foo) order by a limit 100');
   });
 
-  it('union distinct support, https://dev.mysql.com/doc/refman/8.0/en/union.html', function() {
+  it('union distinct support, https://dev.mysql.com/doc/refman/8.0/en/union.html', function () {
     testParser(
       'select a from dual order by a desc limit 1, 1 union distinct select a from foo order by a limit 1'
     );
   });
 
-  it('support quoted alias', function() {
+  it('support quoted alias', function () {
     testParser('select a as `A-A` from b limit 2;');
     testParser('select a as `A#A` from b limit 2;');
     testParser('select a as `A?A` from b limit 2;');
@@ -398,7 +398,7 @@ describe('select grammar support', function() {
     testParser('select a as `A A` from b limit 2;');
   });
 
-  it('bugfix table alias', function() {
+  it('bugfix table alias', function () {
     testParser(`
     SELECT stime, A.names, B.names FROM (
       SELECT stime, names FROM iaas_data.iaas_d3c0d0681cc1900
@@ -416,5 +416,10 @@ describe('select grammar support', function() {
     testParser('select a as `A A`, b as `B B` from z');
     testParser('select a as `A A` from z order by `A A` desc');
     testParser('select a as `A A`, b as `B B` from z group by `A A`, `B B` order by `A A` desc');
+  });
+
+  it('support double quoted alias', function () {
+    testParser('select a as "A A" from z');
+    testParser('select a as "A A" from z order by "A A" desc');
   });
 });
