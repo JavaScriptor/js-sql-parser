@@ -126,8 +126,8 @@ UNION                                                             return 'UNION'
 
 [a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*                  return 'IDENTIFIER'
 \.                                                                return 'DOT'
-['"][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*["']          return 'QUOTED_IDENTIFIER'
-([`])(?:(?=(\\?))\2.)*?\1                                         return 'QUOTED_IDENTIFIER'
+['"][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*["']          return 'IDENTIFIER'
+([`])(?:(?=(\\?))\2.)*?\1                                         return 'IDENTIFIER'
 
 <<EOF>>                                                           return 'EOF'
 .                                                                 return 'INVALID'
@@ -280,8 +280,6 @@ selectExprAliasOpt
   : { $$ = {alias: null, hasAs: null} }
   | AS IDENTIFIER { $$ = {alias: $2, hasAs: true} }
   | IDENTIFIER { $$ = {alias: $1, hasAs: false} }
-  | AS QUOTED_IDENTIFIER { $$ = {alias: $2, hasAs: true} }
-  | QUOTED_IDENTIFIER { $$ = {alias: $1, hasAs: false} }
   | AS STRING { $$ = {alias: $2, hasAs: true} }
   | STRING { $$ = {alias: $2, hasAs: false} }
   ;
@@ -328,14 +326,6 @@ identifier_list
   : identifier { $$ = { type: 'IdentifierList', value: [ $1 ] } }
   | identifier_list ',' identifier { $$ = $1; $1.value.push($3); }
   ;
-quoted_identifier
-  : QUOTED_IDENTIFIER { $$ = { type: 'Identifier', value: $1 } }
-  | quoted_identifier DOT QUOTED_IDENTIFIER { $$ = $1; $1.value += '.' + $3 }
-  ;
-quoted_identifier_list
-  : quoted_identifier { $$ = { type: 'IdentifierList', value: [ $1 ] } }
-  | quoted_identifier_list ',' quoted_identifier { $$ = $1; $1.value.push($3); }
-  ;
 case_expr_opt
   : { $$ = null }
   | expr { $$ = $1 }
@@ -361,7 +351,6 @@ simple_expr_prefix
 simple_expr
   : literal { $$ = $1 }
   | identifier { $$ = $1 }
-  | quoted_identifier { $$ = $1 }
   | function_call { $$ = $1 }
   | simple_expr_prefix { $$ = $1 }
   | '(' expr_list ')' { $$ = { type: 'SimpleExprParentheses', value: $2 } }
