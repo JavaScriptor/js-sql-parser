@@ -413,6 +413,6 @@ describe('select grammar support', function() {
   })
 
   it('query with comment at then end without a newline', function() {
-    testParser('select a.* from "table name"\n-- comment')
+    testParser('select a.* from a\n-- comment')
   })
 });
