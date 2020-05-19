@@ -412,7 +412,7 @@ describe('select grammar support', function() {
     testParser('select a.* from a t1 join b t2 on t1.a = t2.a')
   })
 
-  it('query with comment at then end without a newline', function() {
+  it('query with comment at the end without a trailing newline', function() {
     testParser('select a from b\n-- comment')
   })
 });
