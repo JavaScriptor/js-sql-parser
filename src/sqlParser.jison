@@ -50,6 +50,7 @@ IN                                                                return 'IN'
 SOUNDS                                                            return 'SOUNDS'
 LIKE                                                              return 'LIKE'
 ESCAPE                                                            return 'ESCAPE'
+CAST                                                              return 'CAST'
 REGEXP                                                            return 'REGEXP'
 IS                                                                return 'IS'
 UNKNOWN                                                           return 'UNKNOWN'
@@ -343,6 +344,9 @@ case_when_else
 case_when
   : CASE case_expr_opt when_then_list case_when_else END { $$ = { type: 'CaseWhen', caseExprOpt: $2, whenThenList: $3, else: $4 } }
   ;
+cast
+  : CAST '(' expr AS IDENTIFIER ')' { $$ = { type: 'Cast', expr: $3, castTo: $5 } }
+  ;
 simple_expr_prefix
   : '+' simple_expr %prec UPLUS { $$ = { type: 'Prefix', prefix: $1, value: $2 } }
   | '-' simple_expr %prec UMINUS { $$ = { type: 'Prefix', prefix: $1, value: $2 } }
@@ -361,6 +365,7 @@ simple_expr
   | EXISTS '(' selectClause ')' { $$ = { type: 'SubQuery', value: $3, hasExists: true } }
   | '{' identifier expr '}' { $$ = { type: 'IdentifierExpr', identifier: $2, value: $3 } }
   | case_when { $$ = $1 }
+  | cast { $$ = $1 }
   ;
 bit_expr
   : simple_expr { $$ = $1 }
