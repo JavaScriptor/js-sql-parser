@@ -411,4 +411,19 @@ describe('select grammar support', function() {
   it('bugfix table alias2', function() {
     testParser('select a.* from a t1 join b t2 on t1.a = t2.a')
   })
+
+  it('CAST support issue #9', function() {
+    testParser(`select
+    concat(dsw_cluster_name,',',logic_pod_name) as event_obj,
+    concat(dsw_cluster_name,',',logic_pod_name, ' PFC STORM. 详情: ',
+    '流量突跃 ', cast(FLOW_RX_BPS_RATE100 as int), '%(RX)',
+    '; ', cast(FLOW_TX_BPS_RATE100 as int), '%(TX)',
+    '; PFC 突增 ', cast(PFC_RX_PPS_RATE*100 as int), '%(RECV)') as brief
+    from SOURCE_BASIC_EVENT_POD_FLOW_AND_PFC_TREND
+    where win_end >= '2020-05-19 21:14:12'
+    and win_end < '2020-05-20 21:14:12'
+    and PFC_RX_PPS_RATE >= 100
+    and (FLOW_RX_BPS_RATE <= -0.2 and FLOW_TX_BPS_RATE <= -0.2)
+    `)
+  })
 });
