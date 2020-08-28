@@ -551,3 +551,8 @@ Sql.prototype.travelSelectParenthesized = function(ast) {
   this.travel(ast.value);
   this.appendKeyword(')');
 };
+Sql.prototype.travelIntervalExpression = function (ast) {
+  this.appendKeyword('interval');
+  this.travel(ast.value);
+  this.appendKeyword(ast.unit);
+};
