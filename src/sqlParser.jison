@@ -90,29 +90,29 @@ MODE                                                              return 'MODE'
 OJ                                                                return 'OJ'
 LIMIT                                                             return 'LIMIT'
 UNION                                                             return 'UNION'
-SECOND                                                            return 'SECOND'
-MINUTE                                                            return 'MINUTE'
-HOUR                                                              return 'HOUR'
-SECONDS                                                           return 'SECONDS'
-MINUTES                                                           return 'MINUTES'
-HOURS                                                             return 'HOURS'
-YEAR                                                              return 'YEAR'
-MICROSECOND                                                       return 'MICROSECOND'
-DAY                                                               return 'DAY'
-WEEK                                                              return 'WEEK'
-MONTH                                                             return 'MONTH'
-QUARTER                                                           return 'QUARTER'
-SECOND_MICROSECOND                                                return 'SECOND_MICROSECOND'
-MINUTE_MICROSECOND                                                return 'MINUTE_MICROSECOND'
-MINUTE_SECOND                                                     return 'MINUTE_SECOND'
-HOUR_MICROSECOND                                                  return 'HOUR_MICROSECOND'
-HOUR_SECOND                                                       return 'HOUR_SECOND'
-HOUR_MINUTE                                                       return 'HOUR_MINUTE'
-DAY_MICROSECOND                                                   return 'DAY_MICROSECOND'
-DAY_SECOND                                                        return 'DAY_SECOND'
-DAY_MINUTE                                                        return 'DAY_MINUTE'
-DAY_HOUR                                                          return 'DAY_HOUR'
-YEAR_MONTH                                                        return 'YEAR_MONTH'
+SECOND                                                            return 'IDENTIFIER'
+MINUTE                                                            return 'IDENTIFIER'
+HOUR                                                              return 'IDENTIFIER'
+SECONDS                                                           return 'IDENTIFIER'
+MINUTES                                                           return 'IDENTIFIER'
+HOURS                                                             return 'IDENTIFIER'
+YEAR                                                              return 'IDENTIFIER'
+MICROSECOND                                                       return 'IDENTIFIER'
+DAY                                                               return 'IDENTIFIER'
+WEEK                                                              return 'IDENTIFIER'
+MONTH                                                             return 'IDENTIFIER'
+QUARTER                                                           return 'IDENTIFIER'
+SECOND_MICROSECOND                                                return 'IDENTIFIER'
+MINUTE_MICROSECOND                                                return 'IDENTIFIER'
+MINUTE_SECOND                                                     return 'IDENTIFIER'
+HOUR_MICROSECOND                                                  return 'IDENTIFIER'
+HOUR_SECOND                                                       return 'IDENTIFIER'
+HOUR_MINUTE                                                       return 'IDENTIFIER'
+DAY_MICROSECOND                                                   return 'IDENTIFIER'
+DAY_SECOND                                                        return 'IDENTIFIER'
+DAY_MINUTE                                                        return 'IDENTIFIER'
+DAY_HOUR                                                          return 'IDENTIFIER'
+YEAR_MONTH                                                        return 'IDENTIFIER'
 INTERVAL                                                          return 'INTERVAL'
 
 ","                                                               return ','
@@ -450,29 +450,7 @@ expr
   | expr OR expr { $$ = { type: 'OrExpression', operator: $2, left: $1, right: $3 } }
   | expr AND expr { $$ = { type: 'AndExpression', operator: $2, left: $1, right: $3 } }
   | expr XOR expr { $$ = { type: 'XORExpression', left: $1, right: $3 } }
-  | INTERVAL expr SECOND { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr MINUTE { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr HOUR { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr SECONDS { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr MINUTES { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr HOURS { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr YEAR { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr MICROSECOND { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr DAY { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr WEEK { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr MONTH { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr QUARTER { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr SECOND_MICROSECOND { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr MINUTE_MICROSECOND { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr MINUTE_SECOND { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr HOUR_MICROSECOND { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr HOUR_SECOND { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr HOUR_MINUTE { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr DAY_MICROSECOND { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr DAY_SECOND { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr DAY_MINUTE { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr DAY_HOUR { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
-  | INTERVAL expr YEAR_MONTH { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
+  | INTERVAL expr IDENTIFIER { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
   | INTERVAL expr INTERVAL { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
   ;
 expr_list
