@@ -90,6 +90,30 @@ MODE                                                              return 'MODE'
 OJ                                                                return 'OJ'
 LIMIT                                                             return 'LIMIT'
 UNION                                                             return 'UNION'
+SECOND                                                            return 'IDENTIFIER'
+MINUTE                                                            return 'IDENTIFIER'
+HOUR                                                              return 'IDENTIFIER'
+SECONDS                                                           return 'IDENTIFIER'
+MINUTES                                                           return 'IDENTIFIER'
+HOURS                                                             return 'IDENTIFIER'
+YEAR                                                              return 'IDENTIFIER'
+MICROSECOND                                                       return 'IDENTIFIER'
+DAY                                                               return 'IDENTIFIER'
+WEEK                                                              return 'IDENTIFIER'
+MONTH                                                             return 'IDENTIFIER'
+QUARTER                                                           return 'IDENTIFIER'
+SECOND_MICROSECOND                                                return 'IDENTIFIER'
+MINUTE_MICROSECOND                                                return 'IDENTIFIER'
+MINUTE_SECOND                                                     return 'IDENTIFIER'
+HOUR_MICROSECOND                                                  return 'IDENTIFIER'
+HOUR_SECOND                                                       return 'IDENTIFIER'
+HOUR_MINUTE                                                       return 'IDENTIFIER'
+DAY_MICROSECOND                                                   return 'IDENTIFIER'
+DAY_SECOND                                                        return 'IDENTIFIER'
+DAY_MINUTE                                                        return 'IDENTIFIER'
+DAY_HOUR                                                          return 'IDENTIFIER'
+YEAR_MONTH                                                        return 'IDENTIFIER'
+INTERVAL                                                          return 'INTERVAL'
 
 ","                                                               return ','
 "="                                                               return '='
@@ -426,6 +450,8 @@ expr
   | expr OR expr { $$ = { type: 'OrExpression', operator: $2, left: $1, right: $3 } }
   | expr AND expr { $$ = { type: 'AndExpression', operator: $2, left: $1, right: $3 } }
   | expr XOR expr { $$ = { type: 'XORExpression', left: $1, right: $3 } }
+  | INTERVAL expr IDENTIFIER { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
+  | INTERVAL expr INTERVAL { $$ = { type: 'IntervalExpression', value: $2, unit: $3 } }
   ;
 expr_list
   : expr { $$ = { type: 'ExpressionList', value: [ $1 ] } }
