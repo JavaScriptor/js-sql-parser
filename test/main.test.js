@@ -410,5 +410,29 @@ describe('select grammar support', function() {
 
   it('bugfix table alias2', function() {
     testParser('select a.* from a t1 join b t2 on t1.a = t2.a')
-  })
+  });
+
+  it('support double quoted alias', function() {
+    testParser('select a as "A-A" from b limit 2;');
+    testParser('select a as "A#A" from b limit 2;');
+    testParser('select a as "A?A" from b limit 2;');
+    testParser('select a as "A/B" from b limit 2;');
+    testParser('select a as "A.A" from b limit 2;');
+    testParser('select a as "A|A" from b limit 2;');
+    testParser('select a as "A A" from b limit 2;');
+  });
+
+  it('support single quoted alias', function() {
+    testParser("select a as 'A-A' from b limit 2;");
+    testParser("select a as 'A#A' from b limit 2;");
+    testParser("select a as 'A?A' from b limit 2;");
+    testParser("select a as 'A/B' from b limit 2;");
+    testParser("select a as 'A.A' from b limit 2;");
+    testParser("select a as 'A|A' from b limit 2;");
+    testParser("select a as 'A A' from b limit 2;");
+  });
+
 });
+
+
+

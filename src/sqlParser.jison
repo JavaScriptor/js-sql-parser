@@ -282,6 +282,7 @@ selectExprAliasOpt
   | IDENTIFIER { $$ = {alias: $1, hasAs: false} }
   | AS QUOTED_IDENTIFIER { $$ = {alias: $2, hasAs: true} }
   | QUOTED_IDENTIFIER { $$ = {alias: $1, hasAs: false} }
+  | AS STRING { $$ = {alias: $2, hasAs: true} }
   ;
 
 string
