@@ -10,7 +10,7 @@ sql grammar follows https://dev.mysql.com/doc/refman/5.7/en/select.html
 
 ## news
 
-- Fix bug `using ' & " for column alias?` since v1.4.0 [#40](https://github.com/JavaScriptor/js-sql-parser/issues/40), [#44](https://github.com/JavaScriptor/js-sql-parser/issues/44)
+- Fix bug `using ' & " for column alias?` since v1.4.1 [#40](https://github.com/JavaScriptor/js-sql-parser/issues/40), [#44](https://github.com/JavaScriptor/js-sql-parser/issues/44)
 - Fix bug tableFactor alias since v1.3.0 [#34](https://github.com/JavaScriptor/js-sql-parser/issues/34)
 - Add support for "`" quoted alias since v1.2.2. [#33](https://github.com/JavaScriptor/js-sql-parser/issues/33)
 - Fix bug stringify keyword `having` since v1.2.1. [#29](https://github.com/JavaScriptor/js-sql-parser/issues/29)
