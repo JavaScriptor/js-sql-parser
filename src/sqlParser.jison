@@ -126,8 +126,9 @@ UNION                                                             return 'UNION'
 
 [a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*                  return 'IDENTIFIER'
 \.                                                                return 'DOT'
-['"][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*["']          return 'IDENTIFIER'
-([`])(?:(?=(\\?))\2.)*?\1                                         return 'IDENTIFIER'
+["][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*["]            return 'STRING'
+['][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*[']            return 'STRING'
+[`].+[`]                                                          return 'IDENTIFIER'
 
 <<EOF>>                                                           return 'EOF'
 .                                                                 return 'INVALID'

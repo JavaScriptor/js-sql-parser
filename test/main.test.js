@@ -422,4 +422,13 @@ describe('select grammar support', function () {
     testParser('select a as "A A" from z');
     testParser('select a as "A A" from z order by "A A" desc');
   });
+
+  it('support quoted alias', function () {
+    testParser('select a as \'A A\' from z');
+    testParser('select a as \'"A#A\' from z order by \'"A#A\' desc');
+  });
+
+  it.only('test IDENTIFIER', function () {
+    testParser('select `aa#sfs`(a) as \'A A\' from z');
+  });
 });
