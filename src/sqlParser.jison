@@ -126,8 +126,8 @@ UNION                                                             return 'UNION'
 
 [a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*                  return 'IDENTIFIER'
 \.                                                                return 'DOT'
-['"][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*["']          return 'QUOTED_IDENTIFIER'
-[`].+[`]                                                          return 'QUOTED_IDENTIFIER'
+['"][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*["']          return 'IDENTIFIER'
+([`])(?:(?=(\\?))\2.)*?\1                                         return 'IDENTIFIER'
 
 <<EOF>>                                                           return 'EOF'
 .                                                                 return 'INVALID'
@@ -280,13 +280,11 @@ selectExprAliasOpt
   : { $$ = {alias: null, hasAs: null} }
   | AS IDENTIFIER { $$ = {alias: $2, hasAs: true} }
   | IDENTIFIER { $$ = {alias: $1, hasAs: false} }
-  | AS QUOTED_IDENTIFIER { $$ = {alias: $2, hasAs: true} }
-  | QUOTED_IDENTIFIER { $$ = {alias: $1, hasAs: false} }
+  | AS STRING { $$ = {alias: $2, hasAs: true} }
+  | STRING { $$ = {alias: $2, hasAs: false} }
   ;
-
 string
-  : QUOTED_IDENTIFIER { $$ = { type: 'String', value: $1 } }
-  | STRING { $$ = { type: 'String', value: $1 } }
+  : STRING { $$ = { type: 'String', value: $1 } }
   ;
 number
   : NUMERIC { $$ = { type: 'Number', value: $1 } }
