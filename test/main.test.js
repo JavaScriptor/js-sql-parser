@@ -411,6 +411,11 @@ describe('select grammar support', function () {
   it('bugfix table alias2', function () {
     testParser('select a.* from a t1 join b t2 on t1.a = t2.a')
   });
+  it('place holder support', function() {
+    testParser(
+    "select sum(quota_value) value, busi_col2 as sh, ${a} as a, YEAR(now()) from der_quota_summary where table_ename = 'gshmyyszje_derivedidx' and cd = (select id from t1 where a = ${t1})"
+    )
+  });
 
   it('support quoted alias: multiple alias and orderby support', function () {
     testParser('select a as `A A`, b as `B B` from z');
