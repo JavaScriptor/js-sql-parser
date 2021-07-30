@@ -11,6 +11,7 @@
 [#]\s.*\n                                                         /* skip sql comments */
 \s+                                                               /* skip whitespace */
 
+[$][{](.*?)[}]                                                    return 'PLACE_HOLDER'
 [`][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*[`]            return 'IDENTIFIER'
 [\w]+[\u4e00-\u9fa5]+[0-9a-zA-Z_\u4e00-\u9fa5]*                   return 'IDENTIFIER'
 [\u4e00-\u9fa5][0-9a-zA-Z_\u4e00-\u9fa5]*                         return 'IDENTIFIER'
@@ -150,8 +151,9 @@ INTERVAL                                                          return 'INTERV
 
 [a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*                  return 'IDENTIFIER'
 \.                                                                return 'DOT'
-['"][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*["']          return 'QUOTED_IDENTIFIER'
-[`].+[`]                                                          return 'QUOTED_IDENTIFIER'
+["][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*["]            return 'STRING'
+['][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*[']            return 'STRING'
+([`])(?:(?=(\\?))\2.)*?\1                                         return 'IDENTIFIER'
 
 <<EOF>>                                                           return 'EOF'
 .                                                                 return 'INVALID'
@@ -304,13 +306,11 @@ selectExprAliasOpt
   : { $$ = {alias: null, hasAs: null} }
   | AS IDENTIFIER { $$ = {alias: $2, hasAs: true} }
   | IDENTIFIER { $$ = {alias: $1, hasAs: false} }
-  | AS QUOTED_IDENTIFIER { $$ = {alias: $2, hasAs: true} }
-  | QUOTED_IDENTIFIER { $$ = {alias: $1, hasAs: false} }
+  | AS STRING { $$ = {alias: $2, hasAs: true} }
+  | STRING { $$ = {alias: $2, hasAs: false} }
   ;
-
 string
-  : QUOTED_IDENTIFIER { $$ = { type: 'String', value: $1 } }
-  | STRING { $$ = { type: 'String', value: $1 } }
+  : STRING { $$ = { type: 'String', value: $1 } }
   ;
 number
   : NUMERIC { $$ = { type: 'Number', value: $1 } }
@@ -329,6 +329,7 @@ literal
   | number { $$ = $1 }
   | boolean { $$ = $1 }
   | null { $$ = $1 }
+  | place_holder { $$ = $1 }
   ;
 function_call
   : IDENTIFIER '(' function_call_param_list ')' { $$ = {type: 'FunctionCall', name: $1, params: $3} }
@@ -613,4 +614,7 @@ table_factor
   : identifier partitionOpt aliasOpt index_hint_list_opt { $$ = { type: 'TableFactor', value: $1, partition: $2, alias: $3.alias, hasAs: $3.hasAs, indexHintOpt: $4 } }
   | '(' selectClause ')' aliasOpt { $$ = { type: 'TableFactor', value: { type: 'SubQuery', value: $2 }, alias: $4.alias, hasAs: $4.hasAs} }
   | '(' table_references ')' { $$ = $2; $$.hasParentheses = true }
+  ;
+place_holder
+  : PLACE_HOLDER { $$ = { type: 'PlaceHolder', value: $1, param: $1.slice(2, -1)} }
   ;
