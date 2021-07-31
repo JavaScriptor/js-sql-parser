@@ -410,21 +410,20 @@ describe('select grammar support', function () {
 
   it('bugfix table alias2', function () {
     testParser('select a.* from a t1 join b t2 on t1.a = t2.a')
-  })
+  });
 
   it('bugfix unit_of_time1', function() {
     testParser(`
       SELECT a, b, DATE_SUB(NOW(),INTERVAL 1 YEAR) as time from t1
     `)
-  })
+  });
 
   it('bugfix unit_of_time1', function() {
     testParser(`
       SELECT a, b from t1 where created_at >= DATE_SUB(NOW(),INTERVAL 1 MONTH)
     `)
-  })
-  
   });
+  
   it('place holder support', function() {
     testParser(
     "select sum(quota_value) value, busi_col2 as sh, ${a} as a, YEAR(now()) from der_quota_summary where table_ename = 'gshmyyszje_derivedidx' and cd = (select id from t1 where a = ${t1})"
