@@ -587,6 +587,7 @@ index_hint
 table_factor
   : identifier partitionOpt aliasOpt index_hint_list_opt { $$ = { type: 'TableFactor', value: $1, partition: $2, alias: $3.alias, hasAs: $3.hasAs, indexHintOpt: $4 } }
   | '(' selectClause ')' aliasOpt { $$ = { type: 'TableFactor', value: { type: 'SubQuery', value: $2 }, alias: $4.alias, hasAs: $4.hasAs} }
+  | '(' unionClauseNotParenthesized ')' aliasOpt { $$ = { type: 'TableFactor', value: { type: 'SubQuery', value: $2 }, alias: $4.alias, hasAs: $4.hasAs} }
   | '(' table_references ')' { $$ = $2; $$.hasParentheses = true }
   ;
 place_holder
