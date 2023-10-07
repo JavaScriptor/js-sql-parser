@@ -99,6 +99,7 @@ UNION                                                             return 'UNION'
 "~"                                                               return '~'
 "!="                                                              return '!='
 "!"                                                               return '!'
+"||"                                                              return '||'
 "|"                                                               return '|'
 "&"                                                               return '&'
 "+"                                                               return '+'
@@ -365,6 +366,7 @@ simple_expr
   ;
 bit_expr
   : simple_expr { $$ = $1 }
+  | bit_expr '||' bit_expr { $$ = { type: 'BitExpression', operator: '||', left: $1, right: $3 } }
   | bit_expr '|' bit_expr { $$ = { type: 'BitExpression', operator: '|', left: $1, right: $3 } }
   | bit_expr '&' bit_expr { $$ = { type: 'BitExpression', operator: '&', left: $1, right: $3 } }
   | bit_expr '<<' bit_expr { $$ = { type: 'BitExpression', operator: '<<', left: $1, right: $3 } }
