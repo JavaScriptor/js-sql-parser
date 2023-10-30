@@ -10,6 +10,7 @@ sql grammar follows https://dev.mysql.com/doc/refman/5.7/en/select.html
 
 ## news
 
+- Support feature `PlaceHolder like ${param}` since v1.5.0 [#43](https://github.com/JavaScriptor/js-sql-parser/pull/43)
 - Fix bug `using ' & " for column alias?` since v1.4.1 [#40](https://github.com/JavaScriptor/js-sql-parser/issues/40), [#44](https://github.com/JavaScriptor/js-sql-parser/issues/44)
 - Fix bug tableFactor alias since v1.3.0 [#34](https://github.com/JavaScriptor/js-sql-parser/issues/34)
 - Add support for "`" quoted alias since v1.2.2. [#33](https://github.com/JavaScriptor/js-sql-parser/issues/33)
@@ -33,6 +34,16 @@ ast.value.from.value[0].value.value.value = 'bar';
 
 console.log(parser.stringify(ast));
 // SELECT foo FROM bar
+```
+
+```js
+// placeholder test
+const parser = require('js-sql-parser');
+const ast = parser.parse('select ${a} as a');
+
+ast['value']['selectItems']['value'][0]['value'] = "'value'";
+console.log(parser.stringify(ast));
+// SELECT 'value' AS a
 ```
 
 ## script tag
@@ -59,10 +70,6 @@ var sql = sqlParser.stringify(ast);
 - matchexpr: Full-Text Search Functions. // to support
 - intervalexpr: Date INTERVAL keyword.   // to support
 - into outfile: INTO OUTFILE keyword.    // to support
-
-## TODO
-
-- ${value} like value place holder support.
 
 ## Build
 

@@ -11,7 +11,7 @@
 [#]\s.*\n                                                         /* skip sql comments */
 \s+                                                               /* skip whitespace */
 
-[$][{](.*?)[}]                                                    return 'PLACE_HOLDER'
+[$][{](.+?)[}]                                                    return 'PLACE_HOLDER'
 [`][a-zA-Z_\u4e00-\u9fa5][a-zA-Z0-9_\u4e00-\u9fa5]*[`]            return 'IDENTIFIER'
 [\w]+[\u4e00-\u9fa5]+[0-9a-zA-Z_\u4e00-\u9fa5]*                   return 'IDENTIFIER'
 [\u4e00-\u9fa5][0-9a-zA-Z_\u4e00-\u9fa5]*                         return 'IDENTIFIER'

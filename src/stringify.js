@@ -552,18 +552,6 @@ Sql.prototype.travelSelectParenthesized = function(ast) {
   this.appendKeyword(')');
 };
 Sql.prototype.travelPlaceHolder = function (ast) {
-  if (ast.left) {
-    this.travel(ast.left);
-  }
-
-  if (ast.operator) {
-    this.append(ast.operator);
-  }
-  
-  if (ast.right) {
-    this.append(ast.right);
-  }
-
   if (ast.value) {
     this.travel(ast.value);
   }
