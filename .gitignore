@@ -4,3 +4,4 @@ package-lock.json
 *.log
 *.swp
 dist/parser/sqlParser.js
+.vscode/

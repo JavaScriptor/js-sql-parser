@@ -10,3 +10,4 @@
 1.3.0 fix tableFactor alias bug. AST changed in tableFactor. #34
 1.4.0 fix bug `using ' & " for column alias?` #40 #44
 1.4.1 hogfix "support quoted alias: multiple alias and orderby support"
+1.5.0 support feature placeholder.
