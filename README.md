@@ -46,6 +46,8 @@ console.log(parser.stringify(ast));
 // SELECT 'value' AS a
 ```
 
+Note: PlaceHolder is an `literal` value but not an `identifier`. Table_name / column_name / function_name are `identifier` thus should NOT be placed with placeholder.
+
 ## script tag
 
 ```js
