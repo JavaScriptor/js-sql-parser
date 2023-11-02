@@ -1,7 +1,10 @@
 publish: test
 	@npm publish
 
-test: 
+test:
 	@npm test
+
+test-with-log:
+	@DEBUG=js-sql-parser npm test
 
 .PHONY: publish test

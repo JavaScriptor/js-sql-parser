@@ -2,6 +2,7 @@
 
 const debug = require('debug')('js-sql-parser');
 const parser = require('../');
+const assert = require('assert');
 
 const testParser = function (sql) {
   let firstAst = parser.parse(sql);
@@ -415,6 +416,19 @@ describe('select grammar support', function () {
     testParser(
     "select sum(quota_value) value, busi_col2 as sh, ${a} as a, YEAR(now()) from der_quota_summary where table_ename = 'gshmyyszje_derivedidx' and cd = (select id from t1 where a = ${t1})"
     )
+  });
+  it('place holder support2', function() {
+    testParser(
+    "select sum(quota_value) b, busi_col2 as sh, '${a}' as a, YEAR(now()) from der_quota_summary where table_ename = 'gshmyyszje_derivedidx' and cd = (select id from t1 where a = '${t1}')"
+    )
+  });
+  it('place holder support3', function() {
+    let firstAst = parser.parse('select ${a} as a');
+    firstAst['value']['selectItems']['value'][0]['value'] = "'value'";
+    let firstSql = parser.stringify(firstAst);
+    debug(JSON.stringify(firstAst, null, 2));
+    assert.equal(firstSql.trim().toUpperCase(), "select 'value' as a".toUpperCase());
+    testParser(firstSql);
   });
 
   it('support quoted alias: multiple alias and orderby support', function () {
