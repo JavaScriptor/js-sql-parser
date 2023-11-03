@@ -450,4 +450,45 @@ describe('select grammar support', function () {
   it('test IDENTIFIER', function () {
     testParser('select `aa#sfs`(a) as \'A A\' from z');
   });
+
+  it('test from with union select', function (){
+    testParser(`select 
+    (select min(actividad) 
+      from  
+      ( select client_id, 
+          (select code_description from m_code_value where code_id =61 and id=LActividadEconomica_cd_own_business_main_activity) actividad, 
+          estimated_amount_income_employer monto   
+        from m_clientDetalleNegocios 
+        union all  
+        select  client_id, 
+          (select code_description from m_code_value where code_id =47 and id=Ltipoingreso_cd_income_type) actividad , other_incomes_estimated_amount monto 
+        from m_clientDetalleOtrosIngresos 
+        union all 
+        select  client_id, case r.Lsector_cd_Sector when 154 then 755 else 754 end actividad, 
+        r.estimated_incomes_amount  monto 
+        from m_clientDetalleRelLaboral r   
+      )  actividades 
+      where monto = 
+      ( select max(monto) 
+        from  
+        (         
+          select client_id, 
+            (select code_description 
+            from m_code_value where code_id =61 and id=LActividadEconomica_cd_own_business_main_activity) actividad, estimated_amount_income_employer monto   
+          from m_clientDetalleNegocios         
+          union all          
+          select  client_id, 
+            (select code_description from m_code_value where code_id =47 and id=Ltipoingreso_cd_income_type) actividad , other_incomes_estimated_amount monto 
+          from m_clientDetalleOtrosIngresos         
+          union all         
+          select  client_id, case r.Lsector_cd_Sector when 154 then 755 else 754 end actividad, r.estimated_incomes_amount  monto 
+          from m_clientDetalleRelLaboral r         
+        ) maxact         
+        where client_id = actividades.client_id        
+      ) 
+      and client_id =cli.id
+    ) as c55017 
+    from m_client cli`)
+  })
+
 });
