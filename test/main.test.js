@@ -450,4 +450,16 @@ describe('select grammar support', function () {
   it('test IDENTIFIER', function () {
     testParser('select `aa#sfs`(a) as \'A A\' from z');
   });
+
+  it('Support unicode extended char (U+0080..U+FFFF) as column name or alias', function() {
+    testParser(`select 
+      país, 
+      MAX(produção) as maior_produção, 
+      Ĉapelo,
+      Δάσος,
+      Молоко,
+      سلام,
+      かわいい
+    from table`)
+  })
 });
