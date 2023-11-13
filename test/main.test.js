@@ -462,4 +462,8 @@ describe('select grammar support', function () {
       かわいい
     from table`)
   })
+
+  it('query with comment at the end without a trailing newline', function() {
+    testParser('select a from b\n-- comment')
+  })
 });
