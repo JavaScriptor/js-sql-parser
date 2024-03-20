@@ -462,4 +462,10 @@ describe('select grammar support', function () {
       かわいい
     from table`)
   })
+
+  it('#60 Call function in FROM clause', function() {
+    testParser(`
+    SELECT one.name, group_concat(j.value, ', ') FROM one, json_each(one.stringArray) AS j GROUP BY one.id
+    `)
+  })
 });
