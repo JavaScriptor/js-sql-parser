@@ -10,7 +10,7 @@ sql grammar follows https://dev.mysql.com/doc/refman/5.7/en/select.html
 
 ## news
 
-- Unicode extended char support for column name or alias & Function call in `table_factor` since v1.6.0
+- Unicode extended char support for column name or alias & Function call in `table_factor` since v1.6.0 [#58](https://github.com/JavaScriptor/js-sql-parser/pull/58), [#60](https://github.com/JavaScriptor/js-sql-parser/issues/60)
 - Support feature `PlaceHolder like ${param}` since v1.5.0 [#43](https://github.com/JavaScriptor/js-sql-parser/pull/43)
 - Fix bug `using ' & " for column alias?` since v1.4.1 [#40](https://github.com/JavaScriptor/js-sql-parser/issues/40), [#44](https://github.com/JavaScriptor/js-sql-parser/issues/44)
 - Fix bug tableFactor alias since v1.3.0 [#34](https://github.com/JavaScriptor/js-sql-parser/issues/34)
