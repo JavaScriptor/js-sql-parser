@@ -588,6 +588,7 @@ table_factor
   : identifier partitionOpt aliasOpt index_hint_list_opt { $$ = { type: 'TableFactor', value: $1, partition: $2, alias: $3.alias, hasAs: $3.hasAs, indexHintOpt: $4 } }
   | '(' selectClause ')' aliasOpt { $$ = { type: 'TableFactor', value: { type: 'SubQuery', value: $2 }, alias: $4.alias, hasAs: $4.hasAs} }
   | '(' table_references ')' { $$ = $2; $$.hasParentheses = true }
+  | function_call aliasOpt index_hint_list_opt { $$ = { type: 'TableFactor', value: $1, alias: $2.alias, hasAs: $2.hasAs, indexHintOpt: $3 } }
   ;
 place_holder
   : PLACE_HOLDER { $$ = { type: 'PlaceHolder', value: $1, param: $1.slice(2, -1)} }
