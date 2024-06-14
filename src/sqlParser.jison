@@ -7,7 +7,7 @@
 %%
 
 [/][*](.|\n)*?[*][/]                                              /* skip comments */
-[-][-]\s.*\n                                                      /* skip sql comments */
+[-][-]\s.*\n?                                                     /* skip sql comments */
 [#]\s.*\n                                                         /* skip sql comments */
 \s+                                                               /* skip whitespace */
 
