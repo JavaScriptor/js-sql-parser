@@ -1,0 +1,26 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        include:
+          - node: '14.x'
+            os: ubuntu-latest
+          - node: '16.x'
+            os: ubuntu-latest
+          - node: '18.x'
+            os: ubuntu-latest
+          - node: '20.x'
+            os: ubuntu-latest
+          - node: '22.x'
+            os: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm test

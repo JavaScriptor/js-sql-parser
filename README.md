@@ -2,7 +2,7 @@
 
 > parse / stringify sql (select grammar) in js.
 
-[![Build Status][travis-image]][travis-url]
+[![Build Status][github-actions-image]][github-actions-url]
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
 
@@ -82,8 +82,8 @@ var sql = sqlParser.stringify(ast);
 
 MIT
 
-[travis-image]: https://api.travis-ci.org/JavaScriptor/js-sql-parser.svg
-[travis-url]: https://travis-ci.org/JavaScriptor/js-sql-parser
+[github-actions-image]: https://github.com/JavaScriptor/js-sql-parser/actions/workflows/ci.yml/badge.svg?branch=master
+[github-actions-url]: https://github.com/JavaScriptor/js-sql-parser/actions/workflows/ci.yml
 [npm-image]: https://img.shields.io/npm/v/js-sql-parser.svg
 [npm-url]: https://npmjs.org/package/js-sql-parser
 [downloads-image]: https://img.shields.io/npm/dm/js-sql-parser.svg
