@@ -468,4 +468,8 @@ describe('select grammar support', function () {
     SELECT one.name, group_concat(j.value, ', ') FROM one, json_each(one.stringArray) AS j GROUP BY one.id
     `)
   })
+
+  it('query with comment at the end without a trailing newline', function() {
+    testParser('select a from b\n-- comment')
+  })
 });
