@@ -225,6 +225,14 @@ Sql.prototype.travelCaseWhen = function(ast) {
   }
   this.appendKeyword('end');
 };
+Sql.prototype.travelCast = function(ast) {
+    this.appendKeyword('cast');
+    this.append('(', true, true);
+    this.travel(ast.expr);
+    this.appendKeyword('as');
+    this.append(ast.castTo);
+    this.append(')', true);
+};
 Sql.prototype.travelPrefix = function(ast) {
   this.appendKeyword(ast.prefix);
   this.travel(ast.value);
