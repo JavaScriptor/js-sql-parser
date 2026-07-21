@@ -468,4 +468,15 @@ describe('select grammar support', function () {
     SELECT one.name, group_concat(j.value, ', ') FROM one, json_each(one.stringArray) AS j GROUP BY one.id
     `)
   })
+
+  it('support SQL-standard doubled quotes inside string literals', function () {
+    const ast = testParser("select * from t where name = 'O''Hare'");
+    assert.equal(ast.value.where.right.value, "'O''Hare'");
+
+    const astDouble = testParser('select * from t where name = "say ""hi"""');
+    assert.equal(astDouble.value.where.right.value, '"say ""hi"""');
+
+    // empty string and backslash escapes should keep working
+    testParser("select * from t where a = '' and b = 'O\\'Hare'");
+  })
 });
